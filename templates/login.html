@@ -1,0 +1,21 @@
+<form action="/check" method="post" enctype="multipart/form-data">
+    <p><label>Hello {{ username }}</label></p>
+    <p>
+        <label>your lab ca certificate:</label>
+        <input type="file" name="ca">
+    </p>
+    <p>
+        <label>your lab router wan ip:</label>
+        <input type="text" name="clientwanip" value="">
+    </p>
+    <p>
+        <label>your lab clt ip:</label>
+        <input type="text" name="cltip" value="">
+    </p>
+    <p><input type="submit" value="check"></p>
+</form>
+
+<form action="/" method="post">
+    <p><input type="submit" value="logout"></p>
+</form>
+
