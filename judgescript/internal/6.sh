@@ -6,7 +6,7 @@ then
     exit 0
 fi
 
-if [ "$(curl --HEAD http://www.$1.finalexam.ncku | grep "Location: https:")" == "" ]
+if [ "$(curl --connect-timeout 1 --HEAD http://www.$1.finalexam.ncku | grep "Location: https:")" == "" ]
 then
     echo false
     exit 0

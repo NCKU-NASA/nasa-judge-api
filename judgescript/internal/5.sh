@@ -6,13 +6,13 @@ then
     exit 0
 fi
 
-if [ $(curl -L -k http://www.$1.finalexam.ncku | wc -l) -eq 0 ] && [ "$(curl -L -k http://www.$1.finalexam.ncku 2>&1 | grep "curl: (")" != "" ]
+if [ $(curl --connect-timeout 1 -L -k http://www.$1.finalexam.ncku | wc -l) -eq 0 ] && [ "$(curl -L -k http://www.$1.finalexam.ncku 2>&1 | grep "curl: (")" != "" ]
 then
     echo false
     exit 0
 fi
 
-if [ $(curl -L -k https://www.$1.finalexam.ncku | wc -l) -eq 0 ] && [ "$(curl -L -k https://www.$1.finalexam.ncku 2>&1 | grep "curl: (")" != "" ]
+if [ $(curl --connect-timeout 1 -L -k https://www.$1.finalexam.ncku | wc -l) -eq 0 ] && [ "$(curl -L -k https://www.$1.finalexam.ncku 2>&1 | grep "curl: (")" != "" ]
 then
     echo false
     exit 0

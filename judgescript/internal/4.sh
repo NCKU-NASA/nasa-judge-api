@@ -6,7 +6,7 @@ then
     exit 0
 fi
 
-if [ "$(ldapsearch -h ldap.$1.finalexam.ncku -D "cn=admin,dc=$1,dc=finalexam,dc=ncku" -w finalexam -b "dc=$1,dc=finalexam,dc=ncku" "(uid=WEB$(printf "%02d" $(shuf -i 1-50 -n 1)))" -LLL)" == "" ]
+if [ "$(ldapsearch -l 1 -h ldap.$1.finalexam.ncku -D "cn=admin,dc=$1,dc=finalexam,dc=ncku" -w finalexam -b "dc=$1,dc=finalexam,dc=ncku" "(uid=WEB$(printf "%02d" $(shuf -i 1-50 -n 1)))" -LLL)" == "" ]
 then
     echo false
     exit 0

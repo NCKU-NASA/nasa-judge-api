@@ -26,6 +26,10 @@ try:
 
             print('bash ' + key + '/' + str(i) + '.sh ' + nowargs, file=sys.stderr)
             
+            with open('/etc/resolv.conf', 'r') as f:
+                if 'timeout' not in f.read():
+                    os.system('echo "options timeout:1" >> /etc/resolv.conf')
+            
             getans = os.popen('bash ' + key + '/' + str(i) + '.sh ' + nowargs).read().strip()
             ans[key].append({'message': data[key][i]['message'],'ans': json.loads(getans.lower())})
 except:
