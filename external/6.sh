@@ -8,7 +8,9 @@ fi
 
 cp ca.crt /etc/ipsec.d/cacerts/ca.crt
 
-sed -i "s/right=.*/right=vpn.$1.finalexam.ncku/g" /etc/ipsec.conf
+cp ipsec.secrets /etc/ipsec.secrets
+
+sed "s/right=.*/right=vpn.$1.finalexam.ncku/g" ipsec.conf > /etc/ipsec.conf
 
 systemctl restart strongswan-starter.service
 

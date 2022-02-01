@@ -6,13 +6,7 @@ then
     exit 0
 fi
 
-if [ "$(dig @192.168.140.254 www.$1.finalexam.ncku +time=1 +tries=1 | grep "192.168")" == "" ]
-then
-    echo false
-    exit 0
-fi
-
-if [ "$(dig @192.168.140.254 vpn.$1.finalexam.ncku +time=1 +tries=1 | grep "192.168")" == "" ]
+if [ "$(dig @192.168.140.254 www.$1.finalexam.ncku +time=1 +tries=1 | grep A | grep "192.168")" == "" ]
 then
     echo false
     exit 0
