@@ -1,0 +1,12 @@
+{
+  "externnal": [
+	  { "message":"讓外部使用者可由 http://www.<username>.finalexam.ncku 與 https://www.<username>.finalexam.ncku 瀏覽 srv2 的 web server",
+          "script":"script/1.sh <username>"},
+	  { "message":"安裝 dns server 並管理<username>.finalexam.ncku 網域",
+          "script":"script/2.sh <username> <client wan ip>"},
+	  { "message":"該 dns 將提供外網服務，請勿讓外網查到內網 IP。(www & vpn)",
+          "script":"script/3.sh <username> <client wan ip>"},
+	  { "message":"若 Client 使用 http 協定瀏覽時自動轉到 https。",
+          "script":"script/3.sh <username> <client wan ip>"},
+  ]
+}
