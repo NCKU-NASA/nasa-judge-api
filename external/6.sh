@@ -19,5 +19,6 @@ then
     echo false
     exit 0
 fi
+sed -i "s/192.168.123.254/192.168.140.254/g" /etc/resolv.conf
 echo true
 
