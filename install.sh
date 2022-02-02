@@ -114,7 +114,7 @@ sudo mkdir /etc/nasajudgeserver 2> /dev/null
 sudo mkdir /etc/nasajudgeserver/allowkey 2> /dev/null
 set -e
 
-for filename in judgescript lab.pdf node.conf requirements.txt server.py server.sh templates web
+for filename in judgescript lab.pdf requirements.txt server.py server.sh templates web
 do
 	sudo cp -r $filename /etc/nasajudgeserver/
 done
@@ -131,7 +131,7 @@ for filename in server.sh
 do
 	sudo chmod +x /etc/nasajudgeserver/$filename
 done
-sudo cp  nasajudgeserver.service /lib/systemd/system/nasajudgeserver.service
+sudo cp nasajudgeserver.service /lib/systemd/system/nasajudgeserver.service
 
 cd /etc/nasajudgeserver
 
