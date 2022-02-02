@@ -1,5 +1,9 @@
 #!/bin/bash
 
+mkdir ~/.ssh
+echo "StrictHostKeyChecking no" > ~/.ssh/config
+echo "ConnectTimeout=1" >> ~/.ssh/config
+
 allpackage=$(apt list --installed | sed "s/\/.*//g")
 
 for a in $(cat package.conf)
