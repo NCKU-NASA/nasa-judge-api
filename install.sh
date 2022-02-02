@@ -115,7 +115,7 @@ done
 
 for filename in server.sh
 do
-	sudo chmod +x /etc/lanloginserver/$filename
+	sudo chmod +x /etc/nasajudgeserver/$filename
 done
 sudo cp  nasajudgeserver.service /lib/systemd/system/nasajudgeserver.service
 
