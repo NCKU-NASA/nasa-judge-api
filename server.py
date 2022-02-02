@@ -4,7 +4,7 @@ import json
 import ipaddress
 import re
 
-from flask import Flask,request,redirect,Response,make_response,jsonify,render_template,session
+from flask import Flask,request,redirect,Response,make_response,jsonify,render_template,session,send_file
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(24)
@@ -38,17 +38,30 @@ def logout():
 def login():
     if request.method == 'POST':
         session['username'] = re.sub(r'[^a-zA-Z0-9]', '', request.form["username"])
+        if not os.path.exists('/etc/wireguard/client/' + session['username'] + '.conf'):
+            session.clear()
+            return 'fail'
         resp = render_template('login.html', username=session["username"])
         return resp
     elif request.method == 'GET':
         return host()
 
+@app.route('/downloadwiregaurd',methods=['GET'])
+def wiregaurd():
+    session['username'] = re.sub(r'[^a-zA-Z0-9]', '', session["username"])
+    if not os.path.exists('/etc/wireguard/client/' + session['username'] + '.conf'):
+        session.clear()
+        return 'fail'
+    return send_file('/etc/wireguard/client/' + session['username'] + '.conf', as_attachment=True)
+
 @app.route('/check',methods=['POST'])
 def check():
     data = ""
     try:
-        if type(ipaddress.ip_address(request.form["clientwanip"])).__name__ != 'IPv4Address':
-            return 'error'
+        session['username'] = re.sub(r'[^a-zA-Z0-9]', '', session["username"])
+        if not os.path.exists('/etc/wireguard/client/' + session['username'] + '.conf'):
+            session.clear()
+            return 'fail'
         if type(ipaddress.ip_address(request.form["cltip"])).__name__ != 'IPv4Address':
             return 'error'
     except:
@@ -57,14 +70,15 @@ def check():
     while len(nodes) <= 0:
         time.sleep(0.1)
     nownode = nodes.pop()
-    ca = request.files['ca']
     try:
+        clientip = os.popen('grep -B 1 -A 3 "# ' + session.get('username') + '" /etc/wireguard/server.conf | grep -oP \'(?<=AllowedIPs\s=\s)\d+(\.\d+){3}\' | tail -n 1').read().strip()
+        ca = request.files['ca']
         ca.save(os.path.join('/tmp', 'ca.crt'))
         os.system('scp ' + os.path.join('/tmp', 'ca.crt') + ' root@' + nownode + ':ca.crt')
         os.system('ssh root@' + nownode + ' rm -r judgescript')
         os.system('scp -r judgescript root@' + nownode + ':judgescript')
         os.system('ssh root@' + nownode + ' mv ca.crt judgescript/ca.crt')
-        getans = os.popen('ssh root@' + nownode + ' "cd judgescript/; python3 judge.py ' + session.get('username') + ' ' + request.form["clientwanip"] + ' ' + request.form["cltip"] + '"').read().strip()
+        getans = os.popen('ssh root@' + nownode + ' "cd judgescript/; python3 judge.py ' + session.get('username') + ' ' + clientip + ' ' + request.form["cltip"] + '"').read().strip()
         os.system('ssh root@' + nownode + ' rm -r judgescript')
     except:
         os.system('ssh root@' + nownode + ' bash judgescript/clear.sh')
