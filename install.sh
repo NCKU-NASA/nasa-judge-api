@@ -91,6 +91,11 @@ INSTALL_PYTHON_PATH=python${INSTALL_PYTHON_VERSION:-3.7}
 
 echo "Python version is $INSTALL_PYTHON_VERSION"
 
+sudo apt-get install wireguard
+git clone https://github.com/Jimmy01240397/VpnGenerator
+cp VpnGenerator/addwguser.sh /etc/wireguard/
+mkdir /etc/wireguard/client
+
 arch=$(dpkg --print-architecture)
 
 wget https://github.com/mikefarah/yq/releases/download/v4.17.2/yq_linux_${arch}.tar.gz -O - | tar xz && sudo mv yq_linux_${arch} /usr/bin/yq
