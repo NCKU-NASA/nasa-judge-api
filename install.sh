@@ -95,8 +95,15 @@ sudo apt-get install -y wireguard
 git clone https://github.com/Jimmy01240397/VpnGenerator
 sudo cp VpnGenerator/addwguser.sh /etc/wireguard/
 sudo cp VpnGenerator/addwgserver.sh /etc/wireguard/
-sudo mkdir /etc/wireguard/client
-sudo bash /etc/wireguard/addwgserver.sh -n server -i 10.100.100.254/24 -p 7654
+if [ ! -d /etc/wireguard/client ]
+then
+	sudo mkdir /etc/wireguard/client
+fi
+
+if [ ! -f /etc/wireguard/server.conf ]
+then
+	sudo bash /etc/wireguard/addwgserver.sh -n server -i 10.100.100.254/24 -p 7654
+fi
 
 arch=$(dpkg --print-architecture)
 
