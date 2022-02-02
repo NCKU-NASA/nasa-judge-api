@@ -97,7 +97,7 @@ wget https://github.com/mikefarah/yq/releases/download/v4.17.2/yq_linux_${arch}.
 
 set +e
 sudo mkdir /etc/nasajudgeserver 2> /dev/null
-sudo mkdir /etc/lanloginserver/allowkey 2> /dev/null
+sudo mkdir /etc/nasajudgeserver/allowkey 2> /dev/null
 set -e
 
 for filename in judgescript lab.pdf node.conf requirements.txt server.py server.sh templates web
@@ -107,9 +107,9 @@ done
 
 for filename in node.conf
 do
-	if [ ! -f /etc/lanloginserver/$filename ]
+	if [ ! -f /etc/nasajudgeserver/$filename ]
 	then
-		sudo cp -r $filename /etc/lanloginserver/
+		sudo cp -r $filename /etc/nasajudgeserver/
 	fi
 done
 
