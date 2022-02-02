@@ -18,6 +18,7 @@ with open('data.json', 'r') as f:
 ans={'external':[],'internal':[]}
 keys=list(ans.keys())
 
+os.system('bash start.sh')
 os.system('bash clear.sh')
 try:
     for key in keys:

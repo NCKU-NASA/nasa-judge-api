@@ -1,0 +1,11 @@
+[Unit]
+Description=Start NASA Judge Server
+After=network.target
+
+[Service]
+WorkingDirectory=/etc/nasajudgeserver
+ExecStart=/etc/nasajudgeserver/server.sh
+
+
+[Install]
+WantedBy=multi-user.target

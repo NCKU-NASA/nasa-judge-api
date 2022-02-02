@@ -46,6 +46,14 @@ def login():
     elif request.method == 'GET':
         return host()
 
+@app.route('/downloadlab',methods=['GET'])
+def lab():
+    session['username'] = re.sub(r'[^a-zA-Z0-9]', '', session["username"])
+    if not os.path.exists('/etc/wireguard/client/' + session['username'] + '.conf'):
+        session.clear()
+        return 'fail'
+    return send_file('lab.pdf', as_attachment=True)
+
 @app.route('/downloadwiregaurd',methods=['GET'])
 def wiregaurd():
     session['username'] = re.sub(r'[^a-zA-Z0-9]', '', session["username"])
@@ -71,6 +79,7 @@ def check():
         time.sleep(0.1)
     nownode = nodes.pop()
     try:
+        os.system('> ~/.ssh/known_hosts')
         clientip = os.popen('grep -B 1 -A 3 "# ' + session.get('username') + '" /etc/wireguard/server.conf | grep -oP \'(?<=AllowedIPs\s=\s)\d+(\.\d+){3}\' | tail -n 1').read().strip()
         ca = request.files['ca']
         ca.save(os.path.join('/tmp', 'ca.crt'))
