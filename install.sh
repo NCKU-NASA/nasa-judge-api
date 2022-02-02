@@ -93,8 +93,10 @@ echo "Python version is $INSTALL_PYTHON_VERSION"
 
 sudo apt-get install -y wireguard
 git clone https://github.com/Jimmy01240397/VpnGenerator
-cp VpnGenerator/addwguser.sh /etc/wireguard/
-mkdir /etc/wireguard/client
+sudo cp VpnGenerator/addwguser.sh /etc/wireguard/
+sudo cp VpnGenerator/addwgserver.sh /etc/wireguard/
+sudo mkdir /etc/wireguard/client
+sudo bash /etc/wireguard/addwgserver.sh -n server -i 10.100.100.254/24 -p 7654
 
 arch=$(dpkg --print-architecture)
 
