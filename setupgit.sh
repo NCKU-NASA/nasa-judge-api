@@ -1,6 +1,8 @@
 #!/bin/bash
 cd /tmp
 
+rm -r nasajudgeserver
+
 git clone https://github.com/Jimmy01240397/nasajudgeserver
 
 cd nasajudgeserver
@@ -15,9 +17,9 @@ done
 
 for a in $(ls -a /etc/nasajudgeserver)
 do
-    if [ "$a" != "." ] && [ "$a" != ".." ] && [ "$(cat /etc/nasajudgeserver/.gitignore | sed 's/\/.*//g' | sed '/^!.*/d' | grep $a)" != "" ]
+    if [ "$a" != "." ] && [ "$a" != ".." ] && [ "$(cat /etc/nasajudgeserver/.gitignore | sed 's/\/.*//g' | sed '/^!.*/d' | grep -P "^$(echo "$a" | sed 's/\./\\\./g')$")" == "" ]
     then
-        cp /etc/nasajudgeserver/$a $a
+        cp -r /etc/nasajudgeserver/$a $a
     fi
 done
 
