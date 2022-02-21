@@ -111,7 +111,6 @@ wget https://github.com/mikefarah/yq/releases/download/v4.17.2/yq_linux_${arch}.
 
 set +e
 sudo mkdir /etc/nasajudgeserver 2> /dev/null
-sudo mkdir /etc/nasajudgeserver/allowkey 2> /dev/null
 set -e
 
 for filename in judgescript lab.pdf requirements.txt server.py server.sh templates web
