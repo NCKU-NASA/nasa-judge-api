@@ -3,3 +3,6 @@ venv/*
 __pycache__/*
 server.crt
 server.key
+install-man-page.sh
+VpnGenerator
+yq.1
