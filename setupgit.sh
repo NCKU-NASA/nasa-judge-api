@@ -23,6 +23,6 @@ do
     fi
 done
 
-> /etc/nasajudgeserver/node.conf
+> node.conf
 
 cp /lib/systemd/system/nasajudgeserver.service nasajudgeserver.service
