@@ -114,7 +114,7 @@ sudo mkdir /etc/nasajudgeserver 2> /dev/null
 sudo mkdir /etc/nasajudgeserver/files 2> /dev/null
 set -e
 
-for filename in lab requirements.txt server.py server.sh
+for filename in lab requirements.txt server.py server.sh testcheck.sh
 do
 	sudo cp -r $filename /etc/nasajudgeserver/
 done
