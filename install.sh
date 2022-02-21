@@ -147,6 +147,8 @@ python -m pip install wheel
 python -m pip install -r requirements.txt
 deactivate
 
+sudo systemctl daemon-reload
+
 echo ""
 echo ""
 echo "NASA Judge Server install.sh complete."
