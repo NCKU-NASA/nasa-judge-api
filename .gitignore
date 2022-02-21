@@ -1,1 +1,5 @@
+files/*
 venv/*
+__pycache__/*
+server.crt
+server.key
