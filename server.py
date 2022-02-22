@@ -18,7 +18,7 @@ def check():
     data = json.loads(request.get_data())
     while len(nodes) <= 0:
         time.sleep(0.1)
-    nownode = nodes.pop()
+    nownode = nodes.pop(0)
     try:
         data['wanip'] = os.popen('grep -B 1 -A 3 "# ' + data['studentId'] + '" /etc/wireguard/server.conf | grep -oP \'(?<=AllowedIPs\s=\s)\d+(\.\d+){3}\' | tail -n 1').read().strip()
         with open('/tmp/getdata.json', 'w') as f:
