@@ -1,0 +1,11 @@
+{
+  "labId": "Lab01",
+  "studentId": "F74104757",
+  "data": [
+    {
+      "type": "value",
+      "name": "password",
+      "data": "aaaa"
+    }
+  ]
+}
