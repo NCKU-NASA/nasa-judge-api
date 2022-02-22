@@ -100,9 +100,21 @@ then
 	sudo mkdir /etc/wireguard/client
 fi
 
+if [ ! -d /etc/wireguard/client2 ]
+then
+	sudo mkdir /etc/wireguard/client2
+fi
+
 if [ ! -f /etc/wireguard/server.conf ]
 then
 	sudo bash /etc/wireguard/addwgserver.sh -n server -i 10.100.100.254/24 -p 7654
+fi
+
+if [ ! -f /etc/wireguard/testserver.conf ]
+then
+	sudo bash /etc/wireguard/addwgserver.sh -n testserver -i 10.100.200.254/24 -p 7777
+    sed -i '3 aPostUp = bash /etc/wireguard/testserverfirewall.sh up' /etc/wireguard/testserver.conf
+    sed -i '3 aPostDown = bash /etc/wireguard/testserverfirewall.sh down' /etc/wireguard/testserver.conf
 fi
 
 arch=$(dpkg --print-architecture)
@@ -114,9 +126,14 @@ sudo mkdir /etc/nasajudgeserver 2> /dev/null
 sudo mkdir /etc/nasajudgeserver/files 2> /dev/null
 set -e
 
-for filename in lab requirements.txt server.py server.sh testcheck.py .gitignore setupnode.sh
+for filename in lab requirements.txt server.py server.sh testcheck.py .gitignore setupnode.sh addvpnuser.sh
 do
 	sudo cp -r $filename /etc/nasajudgeserver/
+done
+
+for filename in testserverfirewall.sh
+do
+	sudo cp -r $filename /etc/wireguard/
 done
 
 for filename in node.conf

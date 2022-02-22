@@ -26,11 +26,9 @@ def check():
         os.system('ssh root@' + nownode + ' rm -r judgescript')
         os.system('scp -r lab/' + data['labId'] + ' root@' + nownode + ':judgescript')
         os.system('scp ' + os.path.join('/tmp', 'getdata.json') + ' root@' + nownode + ':judgescript/getdata.json')
-        getans = os.popen('ssh root@' + nownode + ' "cd judgescript/; python3 judge.py"').read().strip()
-        os.system('ssh root@' + nownode + ' rm -r judgescript')
+        getans = os.popen('ssh root@' + nownode + ' "cd judgescript/; python3 judge.py; cd ~; rm -r judgescript"').read().strip()
     except:
-        os.system('ssh root@' + nownode + ' bash judgescript/clear.sh')
-        os.system('ssh root@' + nownode + ' rm -r judgescript')
+        os.system('ssh root@' + nownode + ' "bash judgescript/clear.sh; rm -r judgescript"')
     nodes.append(nownode)
     return getans
 
