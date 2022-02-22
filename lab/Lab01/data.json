@@ -2,6 +2,8 @@
   "external": [
     {
       "message": "linux can ping 8.8.8.8",
-      "args": "<wanip> <studentId> <password>"
+      "args": "<wanip> <studentId> <password>",
+      "weight": 100
     }
+  ]
 }

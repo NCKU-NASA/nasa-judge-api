@@ -20,9 +20,9 @@ def check():
         time.sleep(0.1)
     nownode = nodes.pop()
     try:
-        data['wanip'] = os.popen('grep -B 1 -A 3 "# ' + session.get('username') + '" /etc/wireguard/server.conf | grep -oP \'(?<=AllowedIPs\s=\s)\d+(\.\d+){3}\' | tail -n 1').read().strip()
+        data['wanip'] = os.popen('grep -B 1 -A 3 "# ' + data['studentId'] + '" /etc/wireguard/server.conf | grep -oP \'(?<=AllowedIPs\s=\s)\d+(\.\d+){3}\' | tail -n 1').read().strip()
         with open('/tmp/getdata.json', 'w') as f:
-            f.write(request.get_data())
+            f.write(json.dumps(data))
         os.system('ssh root@' + nownode + ' rm -r judgescript')
         os.system('scp -r lab/' + data['labId'] + ' root@' + nownode + ':judgescript')
         os.system('scp ' + os.path.join('/tmp', 'getdata.json') + ' root@' + nownode + ':judgescript/getdata.json')

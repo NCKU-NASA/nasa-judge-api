@@ -29,22 +29,23 @@ try:
         if a['type'] == 'file':
             with open(a['name'], 'wb') as f:
                 f.write(base64.b64decode(a['data'].encode("UTF-8")))
-        
+    
     for key in keys:
-        for i in range(len(data[key])):
-            nowargs = data[key][i]['args'].replace('<studentId>', getdata['studentId']).replace('<wanip>', getdata['wanip'])
-            for a in getdata['data']:
-                if a['type'] == 'value':
-                    nowargs = nowargs.replace('<' + a['name'] + '>', a['data'])
+        if data.__contains__(key):
+            for i in range(len(data[key])):
+                nowargs = data[key][i]['args'].replace('<studentId>', getdata['studentId']).replace('<wanip>', getdata['wanip'])
+                for a in getdata['data']:
+                    if a['type'] == 'value':
+                        nowargs = nowargs.replace('<' + a['name'] + '>', a['data'])
 
-            print('bash ' + key + '/' + str(i) + '.sh ' + nowargs, file=sys.stderr)
-            
-            with open('/etc/resolv.conf', 'r') as f:
-                if 'timeout' not in f.read():
-                    os.system('echo "options timeout:1" >> /etc/resolv.conf')
-            
-            getans = os.popen('bash ' + key + '/' + str(i) + '.sh ' + nowargs).read().strip()
-            ans[key].append({'message': data[key][i]['message'],'ans': json.loads(getans.lower())})
+                print('bash ' + key + '/' + str(i) + '.sh ' + nowargs, file=sys.stderr)
+                
+                with open('/etc/resolv.conf', 'r') as f:
+                    if 'timeout' not in f.read():
+                        os.system('echo "options timeout:1" >> /etc/resolv.conf')
+                
+                getans = os.popen('bash ' + key + '/' + str(i) + '.sh ' + nowargs).read().strip()
+                ans[key].append({'message': data[key][i]['message'],'ans': json.loads(getans.lower()), 'weight': data[key][i]['weight']})
 except:
     os.system('bash clear.sh')
     print('false')

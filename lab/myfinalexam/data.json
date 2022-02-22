@@ -2,89 +2,110 @@
   "external": [
     {
       "message": "讓外部使用者可由 http://www.<studentId>.finalexam.ncku 與 https://www.<studentId>.finalexam.ncku 瀏覽 srv2 的 web server",
-      "args": "<studentId>"
+      "args": "<studentId>",
+      "weight": 10
     },
     {
       "message": "安裝 dns server 並管理<studentId>.finalexam.ncku 網域",
-      "args": "<studentId> <wanip>"
+      "args": "<studentId> <wanip>",
+      "weight": 10
     },
     {
       "message": "該 dns 將提供外網服務，請勿讓外網查到內網 IP。(www & vpn)",
-      "args": "<studentId> <wanip>"
+      "args": "<studentId> <wanip>",
+      "weight": 10
     },
     {
       "message": "若 Client 使用 http 協定瀏覽時自動轉到 https。",
-      "args": "<studentId>"
+      "args": "<studentId>",
+      "weight": 10
     },
     {
       "message": "瀏覽/auth 目錄時需進行帳密驗證，請使用 ldap 的 WEB 群組中的帳號做 登入，頁面內容不限。",
-      "args": "<studentId>"
+      "args": "<studentId>",
+      "weight": 10
     },
     {
       "message": "https的certificate是否使用srv1的CA做配發",
-      "args": "<studentId>"
+      "args": "<studentId>",
+      "weight": 10
     },
     {
       "message": "架設 ikev2 vpn 使外網可以存取內網服務 fqdn 設為 vpn. <studentId>.finalexam.ncku，新增帳號 vpn 做登入。",
-      "args": "<studentId>"
+      "args": "<studentId>",
+      "weight": 10
     }
   ],
   "internal": [
     {
       "message": "安裝 dns server 並管理<studentId>.finalexam.ncku 網域",
-      "args": "<studentId>"
+      "args": "<studentId>",
+      "weight": 10
     },
     {
       "message": "該 dns 將提供內網服務",
-      "args": "<studentId>"
+      "args": "<studentId>",
+      "weight": 10
     },
     {
       "message": "安裝DHCP供clt上網。",
-      "args": "<clt_ip>"
+      "args": "<clt_ip>",
+      "weight": 10
     },
     {
       "message": "讓內網可以使用外網IP上網。",
-      "args": "<clt_ip>"
+      "args": "<clt_ip>",
+      "weight": 10
     },
     {
       "message": "請安裝ldap server並按照附錄B新增使用者，host設為ldap.<studentId>.finalexam.ncku，dc設為<studentId>.finalexam.ncku。",
-      "args": "<studentId>"
+      "args": "<studentId>",
+      "weight": 10
     },
     {
       "message": "提供http://www.<studentId>.finalexam.ncku與https://www.<studentId>.finalexam.ncku，頁面內容不限。",
-      "args": "<studentId>"
+      "args": "<studentId>",
+      "weight": 10
     },
     {
       "message": "若Client使用http協定瀏覽時自動轉到https。",
-      "args": "<studentId>"
+      "args": "<studentId>",
+      "weight": 10
     },
     {
       "message": "瀏覽/auth目錄時需進行帳密驗證，請使用ldap的WEB群組中的帳號做登入，頁面內容不限。",
-      "args": "<studentId>"
+      "args": "<studentId>",
+      "weight": 10
     },
     {
       "message": "新增三個磁碟，做Raid5，並以 4GB左右(+-0.5G)的空間掛載於/share",
-      "args": ""
+      "args": "",
+      "weight": 10
     },
     {
       "message": "安裝nfs並將分享目錄設為/share與內網做檔案分享。",
-      "args": ""
+      "args": "",
+      "weight": 10
     },
     {
       "message": "安裝ldap client。",
-      "args": "<clt_ip>"
+      "args": "<clt_ip>",
+      "weight": 10
     },
     {
       "message": "允許使用ldap的USER群組帳號登入ssh。",
-      "args": "<clt_ip>"
+      "args": "<clt_ip>",
+      "weight": 10
     },
     {
       "message": "禁止使用ldap的WEB群組帳號登入ssh。",
-      "args": "<clt_ip>"
+      "args": "<clt_ip>",
+      "weight": 10
     },
     {
       "message": "將nfs srv2.<studentId>.finalexam.ncku:/share  mount到/srv2nfs目錄",
-      "args": "<clt_ip>"
+      "args": "<clt_ip>",
+      "weight": 10
     }
   ]
 }
