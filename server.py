@@ -32,6 +32,10 @@ def check():
     nodes.append(nownode)
     return getans
 
+@app.route('/serverlist',methods=['GET'])
+def serverlist():
+    return json.dumps(nodes)
+
 @app.errorhandler(404)
 def page_not_found(e):
     return_result = {'code': 404, 'Success': False,
