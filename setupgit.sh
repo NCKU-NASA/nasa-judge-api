@@ -23,6 +23,8 @@ do
     fi
 done
 
+cp -r /etc/wireguard/testserverfirewall.sh testserverfirewall.sh
+
 > node.conf
 
 cp /lib/systemd/system/nasajudgeserver.service nasajudgeserver.service
