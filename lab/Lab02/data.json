@@ -1,0 +1,29 @@
+{
+  "external": [
+    {
+      "message": "check docker container exist and name correct",
+      "args": "<wanip> <studentId>",
+      "weight": 20
+    },
+    {
+      "message": "check docker container can ping other container with rule",
+      "args": "<wanip> <studentId>",
+      "weight": 20
+    },
+    {
+      "message": "check container port fulfill port forwarding",
+      "args": "<wanip> <studentId>",
+      "weight": 20
+    },
+    {
+      "message": "check there has environment varible in frontend container with wanip",
+      "args": "<wanip> <studentId>",
+      "weight": 20
+    },
+    {
+      "message": "check your services is accessable and complete",
+      "args": "<wanip>",
+      "weight": 20
+    }
+  ]
+}
