@@ -22,7 +22,7 @@
     },
     {
       "message": "check your services is accessable and complete",
-      "args": "<wanip> <studentId>",
+      "args": "<wanip>",
       "weight": 20
     }
   ]
