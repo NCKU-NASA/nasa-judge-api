@@ -3,6 +3,7 @@
 mkdir ~/.ssh
 echo "StrictHostKeyChecking no" > ~/.ssh/config
 echo "UserKnownHostsFile=/dev/null" >> ~/.ssh/config
+echo "PasswordAuthentication=no" >> ~/.ssh/config
 echo "ConnectTimeout=1" >> ~/.ssh/config
 
 allpackage=$(apt list --installed | sed "s/\/.*//g")
