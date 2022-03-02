@@ -6,7 +6,7 @@ then
 fi
 
 
-if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 'sudo docker ps --format "table {{.Names}}" | grep -v "NAMES" | grep "img\|frontend\|text\|list" | sort | wc -l')" != "4" ]
+if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 'sudo docker ps --format "table {{.Names}}" | grep -v "NAMES" | grep -P "^(img|frontend|text|list)" | sort | wc -l')" != "4" ]
 then
     echo false
     exit 0
