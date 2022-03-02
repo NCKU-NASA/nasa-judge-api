@@ -5,7 +5,7 @@ then
     exit 0
 fi
 
-context="cd644334d7fbd310d77b2d1de3383266e1b0ad80cd6341f87e885d2ffb25a31c"
+context=$(sed "s/<wanip>/$1/g" exweb.html | sha256sum | sed "s/[^0-9a-zA-Z]//g")
 
 # testing service is up with curl
 if [ "$(curl -s -w "%{http_code}" -o /dev/null $1:8080)" != "200" ]
@@ -16,7 +16,7 @@ fi
 
 
 # testing services context with curl
-if [ "$(curl -s $1:8080 | sha256sum | sed "s/[^0-9a-zA-Z]//g")" != "$context" ]
+if [ "$(echo "$(curl -s $1:8080)" | sha256sum | sed "s/[^0-9a-zA-Z]//g")" != "$context" ]
 then
     echo false
     exit 0
