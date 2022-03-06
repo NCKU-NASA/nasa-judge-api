@@ -1,0 +1,34 @@
+{
+  "external": [
+    {
+      "message": "check vm have 2 additional 10GB disks",
+      "args": "<wanip> <studentId>",
+      "weight": 10
+    },
+    {
+      "message": "check if there exist a block device called /dev/md0",
+      "args": "<wanip> <studentId>",
+      "weight": 20
+    },
+    {
+      "message": "check if /dev/md0 is raid0 device",
+      "args": "<wanip> <studentId>",
+      "weight": 10
+    },
+    {
+      "message": "check if the filesystem of /dev/md0 is ext4",
+      "args": "<wanip> <studentId>",
+      "weight": 20
+    },
+    {
+      "message": "check if /dev/md0 mount point is /mnt with correct capacity",
+      "args": "<wanip> <studentId>",
+      "weight": 20
+    },
+    {
+      "message": "check if mdadm.conf have correct configuration",
+      "args": "<wanip> <studentId>",
+      "weight": 20
+    }
+  ]
+}
