@@ -11,6 +11,12 @@ then
     echo false
     exit 0
 fi
+# frontend -> list
+if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 sudo docker exec -t frontend ping list -c 1 -W 1 | grep -P "64 bytes from .* \(.*\): icmp_seq=1")" == '' ]
+then
+    echo false
+    exit 0
+fi
 # text -> list
 if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 sudo docker exec -t text ping list -c 1 -W 1 | grep -P "64 bytes from .* \(.*\): icmp_seq=1")" == '' ]
 then
