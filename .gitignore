@@ -6,3 +6,5 @@ server.key
 install-man-page.sh
 VpnGenerator
 yq.1
+.DS_Store
+*/.DS_Store
