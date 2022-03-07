@@ -1,0 +1,24 @@
+{
+  "external": [
+    {
+      "message": "check user exist and in sudo group(check with `groups USERNAME`)",
+      "args": "<wanip> <studentId> <userName>",
+      "weight": 20
+    },
+    {
+      "message": "check servic<wanip> <studentId> <servicesName>es exist and is running",
+      "args": "",
+      "weight": 20
+    },
+    {
+      "message": "check services is enable",
+      "args": "<wanip> <studentId> <servicesName>",
+      "weight": 20
+    },
+    {
+      "message": "",
+      "args": "<wanip> <studentId> <userName>",
+      "weight": 40
+    }
+  ]
+}
