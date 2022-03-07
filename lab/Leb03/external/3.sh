@@ -5,7 +5,7 @@ then
     exit 0
 fi
 
-ssh $(echo "$2" | awk '{print tolower($0)}')@$1 sudo gpasswd -d $3 sudo
+ssh $(echo "$2" | awk '{print tolower($0)}')@$1 sudo gpasswd -d $3 sudo > /dev/null
 
 sleep 4;
 if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 groups "$3" | grep sudo)" == "" ]
