@@ -5,7 +5,7 @@ then
     exit 0
 fi
 
-if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 df -h | grep mnt | awk '{print $2}')" != "20G" ]
+if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 df -h | grep "mnt\|md0" | awk '{print $2}')" != "20G" ]
 then
     echo false
     exit 0
