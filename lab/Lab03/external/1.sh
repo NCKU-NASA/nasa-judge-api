@@ -1,7 +1,7 @@
 #!/bin/bash
 if [ $# -lt 3 ]
 then
-    echo "usage: $0 <wanip> <studentId> <servicesName>"
+    echo "usage: $0 <wanip> <studentId> <serviceName>"
     exit 0
 fi
 
@@ -15,3 +15,4 @@ fi
 
 echo true
 exit 0
+

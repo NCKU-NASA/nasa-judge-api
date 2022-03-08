@@ -7,12 +7,12 @@
     },
     {
       "message": "check services exist and is running",
-      "args": "<wanip> <studentId> <servicesName>",
+      "args": "<wanip> <studentId> <serviceName>",
       "weight": 20
     },
     {
       "message": "check services is enable",
-      "args": "<wanip> <studentId> <servicesName>",
+      "args": "<wanip> <studentId> <serviceName>",
       "weight": 20
     },
     {
