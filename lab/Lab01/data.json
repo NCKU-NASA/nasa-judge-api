@@ -3,7 +3,12 @@
     {
       "message": "linux can ping 8.8.8.8",
       "args": "<wanip> <studentId>",
-      "weight": 100
+      "weight": 50
+    },
+    {
+      "message": "sudo can no password",
+      "args": "<wanip> <studentId>",
+      "weight": 50
     }
   ]
 }
