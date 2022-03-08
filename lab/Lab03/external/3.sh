@@ -10,6 +10,7 @@ ssh $(echo "$2" | awk '{print tolower($0)}')@$1 sudo gpasswd -d $3 sudo > /dev/n
 sleep 4;
 if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 groups "$3" | grep sudo)" == "" ]
 then
+    ssh $(echo "$2" | awk '{print tolower($0)}')@$1 sudo usermod -aG sudo "$3" > /dev/null
     echo false
     exit 0
 fi
