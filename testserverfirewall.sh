@@ -25,7 +25,8 @@ then
     do
         iptables $mode FORTESTSERVER -s 10.100.200.$a -d 10.100.100.$a -j ACCEPT
     done
-
+    
+    iptables $mode FORTESTSERVER -s 10.100.200.38 -j ACCEPT
     iptables $mode FORTESTSERVER -m state --state ESTABLISHED,RELATED -j ACCEPT
     iptables $mode FORTESTSERVER -j DROP
 fi
