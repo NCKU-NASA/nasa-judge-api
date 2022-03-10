@@ -38,5 +38,5 @@ sudo systemctl restart nasasqlsshtunnel.service
 6. rename your network wan interface to name `wan` and your workernode lan area to name `lan`.
 ![image](https://user-images.githubusercontent.com/57281249/157760749-37bbc2e8-d626-47cd-87ee-5d0a4658c07f.png)
 
-7. change `iptablesconf.conf` lan ip from `192.168.123.0/24` to your lan ip's network id.
+7. change `iptablesconf.conf` lan ip from `192.168.123.0/24` to your lan ip's network id(it must be /24).
 8. send 
