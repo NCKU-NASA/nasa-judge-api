@@ -166,7 +166,7 @@ do
 	sudo cp -r $filename /etc/wireguard/
 done
 
-for filename in node.conf
+for filename in node.conf db.conf
 do
 	if [ ! -f /etc/nasajudgeapi/$filename ]
 	then
