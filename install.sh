@@ -111,13 +111,21 @@ fi
 if [ ! -f /etc/wireguard/server.conf ]
 then
 	sudo bash /etc/wireguard/addwgserver.sh -n server -i 10.100.100.254/24 -p 7654
+	sed -i '3 aMTU = 1350' /etc/wireguard/testserver.conf
 fi
 
 if [ ! -f /etc/wireguard/testserver.conf ]
 then
 	sudo bash /etc/wireguard/addwgserver.sh -n testserver -i 10.100.200.254/24 -p 7777
-    sed -i '3 aPostUp = bash /etc/wireguard/testserverfirewall.sh up' /etc/wireguard/testserver.conf
-    sed -i '3 aPostDown = bash /etc/wireguard/testserverfirewall.sh down' /etc/wireguard/testserver.conf
+	sed -i '3 aPostUp = bash /etc/wireguard/testserverfirewall.sh up' /etc/wireguard/testserver.conf
+	sed -i '3 aPostDown = bash /etc/wireguard/testserverfirewall.sh down' /etc/wireguard/testserver.conf
+	sed -i '3 aMTU = 1350' /etc/wireguard/testserver.conf
+fi
+
+if [ ! -f /etc/wireguard/judgeapi.conf ]
+then
+	sudo bash /etc/wireguard/addwgserver.sh -n judgeapi -i 172.18.142.1/24 -p 1111
+	sed -i '4d' /etc/wireguard/judgeapi.conf
 fi
 
 arch=$(dpkg --print-architecture)
