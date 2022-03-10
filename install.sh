@@ -92,6 +92,7 @@ INSTALL_PYTHON_PATH=python${INSTALL_PYTHON_VERSION:-3.7}
 echo "Python version is $INSTALL_PYTHON_VERSION"
 
 sudo apt-get install -y wireguard
+rm -r VpnGenerator
 git clone https://github.com/Jimmy01240397/VpnGenerator
 sudo cp VpnGenerator/addwguser.sh /etc/wireguard/
 sudo cp VpnGenerator/addwgserver.sh /etc/wireguard/
