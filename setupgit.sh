@@ -9,7 +9,7 @@ cd nasa-judge-api
 
 for a in $(ls -a)
 do
-    if [ "$a" != "." ] && [ "$a" != ".." ] && [ "$a" != ".git" ] && [ "$a" != "install.sh" ] && [ "$a" != "setupgit.sh" ]
+    if [ "$a" != "." ] && [ "$a" != ".." ] && [ "$a" != ".git" ] && [ "$a" != "README.md" ] && [ "$a" != "install.sh" ] && [ "$a" != "setupgit.sh" ]
     then
         rm -rf $a
     fi
