@@ -3,10 +3,16 @@ import time
 import json
 import ipaddress
 import re
+import pymysql
+import sys
+#import charts
 
 from flask import Flask,request,redirect,Response,make_response,jsonify,render_template,session,send_file
 
 app = Flask(__name__)
+
+with open('db.conf', 'r') as f:
+    db_settings = json.loads(f.read())
 
 with open('node.conf', 'r') as f:
     nodes = f.read().split()
@@ -35,6 +41,36 @@ def check():
 @app.route('/serverlist',methods=['GET'])
 def serverlist():
     return json.dumps(nodes)
+
+@app.route('/getdbscore',methods=['GET'])
+def getdbscore():
+    showresult = False
+    for a in range(1,len(sys.argv)):
+        if sys.argv[a] == '-r':
+            showresult = True
+
+    # 建立Connection物件
+    conn = pymysql.connect(**db_settings)
+    cursor = conn.cursor()
+    if showresult:
+        cursor.execute("SELECT labid, studentId, score, result FROM score")
+    else:
+        cursor.execute("SELECT labid, studentId, score FROM score")
+
+    result_set = cursor.fetchall()
+    allscore = {}
+    for a in result_set:
+        if not allscore.__contains__(a[0]):
+            allscore[a[0]] = {}
+        if not allscore[a[0]].__contains__(a[1]):
+            allscore[a[0]][a[1]] = {'score':a[2]}
+            if showresult:
+                allscore[a[0]][a[1]]['result'] = json.loads(a[3])
+        elif allscore[a[0]][a[1]]['score'] < a[2]:
+            allscore[a[0]][a[1]] = {'score':a[2]}
+            if showresult:
+                allscore[a[0]][a[1]]['result'] = json.loads(a[3])
+    return json.dumps(allscore)
 
 @app.errorhandler(404)
 def page_not_found(e):
