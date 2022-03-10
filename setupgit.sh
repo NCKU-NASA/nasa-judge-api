@@ -17,7 +17,7 @@ done
 
 for a in $(ls -a /etc/nasajudgeapi)
 do
-    if [ "$a" != "." ] && [ "$a" != ".." ] && [ "$(cat /etc/nasajudgeapi/.gitignore | sed 's/\/.*//g' | sed '/^!.*/d' | grep -P "^$(echo "$a" | sed 's/\./\\\./g')$")" == "" ]
+    if [ "$a" != "." ] && [ "$a" != ".." ] && [ "$a" != "db.conf" ] && [ "$(cat /etc/nasajudgeapi/.gitignore | sed 's/\/.*//g' | sed '/^!.*/d' | grep -P "^$(echo "$a" | sed 's/\./\\\./g')$")" == "" ]
     then
         sudo cp -r /etc/nasajudgeapi/$a $a
     fi
