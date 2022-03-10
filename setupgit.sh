@@ -28,4 +28,4 @@ sudo cp -r /etc/wireguard/testserverfirewall.sh testserverfirewall.sh
 > node.conf
 
 sudo cp /etc/systemd/system/nasajudgeapi.service nasajudgeapi.service
-sudo cp /etc/systemd/system/nasajudgesql.service nasajudgesql.service
+sudo cp /etc/systemd/system/nasasqlsshtunnel.service nasasqlsshtunnel.service
