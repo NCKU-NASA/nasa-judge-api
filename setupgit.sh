@@ -27,4 +27,4 @@ cp -r /etc/wireguard/testserverfirewall.sh testserverfirewall.sh
 
 > node.conf
 
-cp /lib/systemd/system/nasajudgeapi.service nasajudgeapi.service
+cp /etc/systemd/system/nasajudgeapi.service nasajudgeapi.service
