@@ -1,11 +1,11 @@
 #!/bin/bash
 cd /tmp
 
-rm -r nasajudgeapi
+rm -r nasa-judge-api
 
-git clone https://github.com/NCKU-NASA/nasajudgeapi
+git clone https://github.com/NCKU-NASA/nasa-judge-api
 
-cd nasajudgeapi
+cd nasa-judge-api
 
 for a in $(ls -a)
 do
