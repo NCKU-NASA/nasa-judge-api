@@ -91,7 +91,7 @@ INSTALL_PYTHON_PATH=python${INSTALL_PYTHON_VERSION:-3.7}
 
 echo "Python version is $INSTALL_PYTHON_VERSION"
 
-sudo apt-get install -y wireguard
+sudo apt-get install -y wireguard bind9 curl wget
 set +e
 rm -r VpnGenerator
 set -e
@@ -111,7 +111,9 @@ fi
 if [ ! -f /etc/wireguard/server.conf ]
 then
 	sudo bash /etc/wireguard/addwgserver.sh -n server -i 10.100.100.254/24 -p 7654
-	sed -i '3 aMTU = 1350' /etc/wireguard/testserver.conf
+	sed -i '3 aMTU = 1350' /etc/wireguard/server.conf
+	systemctl enable wg-quick@server.service
+	systemctl start wg-quick@server.service
 fi
 
 if [ ! -f /etc/wireguard/testserver.conf ]
@@ -120,12 +122,28 @@ then
 	sed -i '3 aPostUp = bash /etc/wireguard/testserverfirewall.sh up' /etc/wireguard/testserver.conf
 	sed -i '3 aPostDown = bash /etc/wireguard/testserverfirewall.sh down' /etc/wireguard/testserver.conf
 	sed -i '3 aMTU = 1350' /etc/wireguard/testserver.conf
+	systemctl enable wg-quick@testserver.service
+	systemctl start wg-quick@testserver.service
 fi
 
 if [ ! -f /etc/wireguard/judgeapi.conf ]
 then
 	sudo bash /etc/wireguard/addwgserver.sh -n judgeapi -i 172.18.142.1/24 -p 1111
 	sed -i '4d' /etc/wireguard/judgeapi.conf
+	systemctl enable wg-quick@judgeapi.service
+	systemctl start wg-quick@judgeapi.service
+fi
+
+if [ "$(sed 's/ //g;s/\t//g' /etc/bind/named.conf.options | grep "allow-query{any;};")" == "" ]
+then
+	sed "$(($(wc -l < /etc/bind/named.conf.options)-1)) aallow-query { any; };" /etc/bind/named.conf.options
+	sudo systemctl reload named.service
+	sudo systemctl restart named.service
+fi
+
+if [ "$(sudo ls /root/.ssh/id_rsa)" == "" ]
+then
+	sudo ssh-keygen
 fi
 
 arch=$(dpkg --print-architecture)
