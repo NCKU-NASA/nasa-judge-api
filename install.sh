@@ -149,7 +149,7 @@ for filename in server.sh
 do
 	sudo chmod +x /etc/nasajudgeapi/$filename
 done
-sudo cp nasajudgeapi.service /lib/systemd/system/nasajudgeapi.service
+sudo cp nasajudgeapi.service /etc/systemd/system/nasajudgeapi.service
 
 cd /etc/nasajudgeapi
 
