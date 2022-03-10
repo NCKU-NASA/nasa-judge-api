@@ -1,0 +1,11 @@
+[Unit]
+Description=Start NASA Judge API Service
+After=network.target
+
+[Service]
+WorkingDirectory=/etc/nasajudgeapi
+ExecStart=/etc/nasajudgeapi/server.sh
+
+
+[Install]
+WantedBy=multi-user.target

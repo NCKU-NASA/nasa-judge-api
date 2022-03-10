@@ -1,6 +1,6 @@
 #!/bin/bash
 
-workdir="/etc/nasajudgeserver"
+workdir="/etc/nasajudgeapi"
 
 . ./venv/bin/activate
 
