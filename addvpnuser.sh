@@ -28,7 +28,7 @@ cp /etc/wireguard/client2/$1.conf testvpn.conf
 
 zip wireguard *
 
-cp wireguard.zip /etc/nasajudgeserver/files/$1/wireguard.zip
+cp wireguard.zip /etc/nasajudgeapi/files/$1/wireguard.zip
 
 cd ~
 rm -r /tmp/nasa

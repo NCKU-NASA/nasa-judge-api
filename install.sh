@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sudo systemctl stop nasajudgeserver.service
+sudo systemctl stop nasajudgeapi.service
 
 set -e
 UBUNTU=false
@@ -122,13 +122,13 @@ arch=$(dpkg --print-architecture)
 wget https://github.com/mikefarah/yq/releases/download/v4.17.2/yq_linux_${arch}.tar.gz -O - | tar xz && sudo mv yq_linux_${arch} /usr/bin/yq
 
 set +e
-sudo mkdir /etc/nasajudgeserver 2> /dev/null
-sudo mkdir /etc/nasajudgeserver/files 2> /dev/null
+sudo mkdir /etc/nasajudgeapi 2> /dev/null
+sudo mkdir /etc/nasajudgeapi/files 2> /dev/null
 set -e
 
 for filename in lab requirements.txt server.py server.sh testcheck.py .gitignore setupnode.sh addvpnuser.sh
 do
-	sudo cp -r $filename /etc/nasajudgeserver/
+	sudo cp -r $filename /etc/nasajudgeapi/
 done
 
 for filename in testserverfirewall.sh
@@ -138,19 +138,19 @@ done
 
 for filename in node.conf
 do
-	if [ ! -f /etc/nasajudgeserver/$filename ]
+	if [ ! -f /etc/nasajudgeapi/$filename ]
 	then
-		sudo cp -r $filename /etc/nasajudgeserver/
+		sudo cp -r $filename /etc/nasajudgeapi/
 	fi
 done
 
 for filename in server.sh
 do
-	sudo chmod +x /etc/nasajudgeserver/$filename
+	sudo chmod +x /etc/nasajudgeapi/$filename
 done
-sudo cp nasajudgeserver.service /lib/systemd/system/nasajudgeserver.service
+sudo cp nasajudgeapi.service /lib/systemd/system/nasajudgeapi.service
 
-cd /etc/nasajudgeserver
+cd /etc/nasajudgeapi
 
 if [ ! -f server.key ] && [ ! -f server.crt ]
 then
@@ -168,8 +168,8 @@ sudo systemctl daemon-reload
 
 echo ""
 echo ""
-echo "NASA Judge Server install.sh complete."
-echo "please request your certificate from ca (or you can just use self signed certificate and put your server certificate and server private key in /etc/nasajudgeserver name to server.crt and server.key ."
-echo "please add your node at /etc/nasajudgeserver/node.conf"
-echo "Then you can use systemctl start nasajudgeserver.service"
-echo "If you want to auto run on boot please type 'systemctl enable nasajudgeserver.service'"
+echo "NASA Judge API Service install.sh complete."
+echo "please request your certificate from ca (or you can just use self signed certificate and put your server certificate and server private key in /etc/nasajudgeapi name to server.crt and server.key ."
+echo "please add your node at /etc/nasajudgeapi/node.conf"
+echo "Then you can use systemctl start nasajudgeapi.service"
+echo "If you want to auto run on boot please type 'systemctl enable nasajudgeapi.service'"

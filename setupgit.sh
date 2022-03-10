@@ -15,11 +15,11 @@ do
     fi
 done
 
-for a in $(ls -a /etc/nasajudgeserver)
+for a in $(ls -a /etc/nasajudgeapi)
 do
-    if [ "$a" != "." ] && [ "$a" != ".." ] && [ "$(cat /etc/nasajudgeserver/.gitignore | sed 's/\/.*//g' | sed '/^!.*/d' | grep -P "^$(echo "$a" | sed 's/\./\\\./g')$")" == "" ]
+    if [ "$a" != "." ] && [ "$a" != ".." ] && [ "$(cat /etc/nasajudgeapi/.gitignore | sed 's/\/.*//g' | sed '/^!.*/d' | grep -P "^$(echo "$a" | sed 's/\./\\\./g')$")" == "" ]
     then
-        cp -r /etc/nasajudgeserver/$a $a
+        cp -r /etc/nasajudgeapi/$a $a
     fi
 done
 
@@ -27,4 +27,4 @@ cp -r /etc/wireguard/testserverfirewall.sh testserverfirewall.sh
 
 > node.conf
 
-cp /lib/systemd/system/nasajudgeserver.service nasajudgeserver.service
+cp /lib/systemd/system/nasajudgeapi.service nasajudgeapi.service
