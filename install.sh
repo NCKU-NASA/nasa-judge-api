@@ -1,7 +1,7 @@
 #!/bin/bash
 
 sudo systemctl stop nasajudgeapi.service
-sudo systemctl stop nasajudgesql.service
+sudo systemctl stop nasasqlsshtunnel.service
 
 set -e
 UBUNTU=false
@@ -179,7 +179,7 @@ do
 	sudo chmod +x /etc/nasajudgeapi/$filename
 done
 sudo cp nasajudgeapi.service /etc/systemd/system/nasajudgeapi.service
-sudo cp nasajudgesql.service /etc/systemd/system/nasajudgesql.service
+sudo cp nasasqlsshtunnel.service /etc/systemd/system/nasasqlsshtunnel.service
 
 cd /etc/nasajudgeapi
 
