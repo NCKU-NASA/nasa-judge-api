@@ -1,6 +1,7 @@
 #!/bin/bash
 
 sudo systemctl stop nasajudgeapi.service
+sudo systemctl stop nasajudgesql.service
 
 set -e
 UBUNTU=false
@@ -178,6 +179,7 @@ do
 	sudo chmod +x /etc/nasajudgeapi/$filename
 done
 sudo cp nasajudgeapi.service /etc/systemd/system/nasajudgeapi.service
+sudo cp nasajudgesql.service /etc/systemd/system/nasajudgesql.service
 
 cd /etc/nasajudgeapi
 
@@ -200,5 +202,6 @@ echo ""
 echo "NASA Judge API Service install.sh complete."
 echo "please request your certificate from ca (or you can just use self signed certificate and put your server certificate and server private key in /etc/nasajudgeapi name to server.crt and server.key ."
 echo "please add your node at /etc/nasajudgeapi/node.conf"
-echo "Then you can use systemctl start nasajudgeapi.service"
+echo "Then you can use systemctl start nasajudgeapi.service to start the service"
+echo "Then you can use systemctl start nasajudgeapi.service to start ssh tunnel to judgebackend sql port"
 echo "If you want to auto run on boot please type 'systemctl enable nasajudgeapi.service'"
