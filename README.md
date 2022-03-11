@@ -3,6 +3,7 @@ NCKU NASA judge api service
 
 - [Install](#Install)
 - [Remove](#Remove)
+- [Api](#Api)
 - [How to write a Lab check code](#how-to-write-a-lab-check-code)
 ## Install
 1. clone this repo and cd into nasa-judge-api.
@@ -60,6 +61,127 @@ bash /etc/nasajudgeserver/addvpnuser.sh <username>
 git clone https://github.com/NCKU-NASA/nasa-judge-api
 cd nasa-judge-api
 sh remove.sh
+```
+
+## Api
+please connect this api on backend with `judgeapi` vpn ip
+
+- `/`
+  - run judge
+    - `curl -X POST 127.0.0.1 -H "Accept: application/json" --data '{"labId": "Lab01","studentId": "F74104757","data": []}' | jq`
+``` json
+{
+  "external": [
+    {
+      "message": "linux can ping 8.8.8.8",
+      "ans": true,
+      "weight": 50
+    },
+    {
+      "message": "sudo can no password",
+      "ans": true,
+      "weight": 50
+    }
+  ],
+  "internal": []
+}
+```
+- `/alive`
+  - for backend to check api is alive
+    - `curl 127.0.0.1/alive | jq`
+``` json
+true
+```
+- `/serverlist`
+  - get api's worker queue
+    - `curl 127.0.0.1/serverlist | jq`
+``` json
+[
+  "192.168.123.111",
+  "192.168.123.112",
+  "192.168.123.113",
+  "192.168.123.114",
+  "192.168.123.115",
+  "192.168.123.116",
+  "192.168.123.117",
+  "192.168.123.118",
+  "192.168.123.119",
+  ...
+]
+```
+- `/getdbscore`
+  - get student score from backend
+    - `curl 127.0.0.1/getdbscore | jq`
+``` json
+{
+  "Lab01": {
+    "<studentid>": {
+      "score": 100
+    },
+    "<studentid>": {
+      "score": 100
+    },
+    "<studentid>": {
+      "score": 100
+    },
+    "<studentid>": {
+      "score": 100
+    },
+    "<studentid>": {
+      "score": 100
+    },
+    "<studentid>": {
+      "score": 100
+    },
+    ...
+  }
+}
+```
+- `/getdbscore/result`
+  - get student score and result from backend
+    - `curl 127.0.0.1/getdbscore/result | jq`
+``` json
+{
+  "Lab01": {
+    "<studentid>": {
+      "score": 100,
+      "result": {
+        "external": [
+          {
+            "message": "linux can ping 8.8.8.8",
+            "ans": true,
+            "weight": 50
+          },
+          {
+            "message": "sudo can no password",
+            "ans": true,
+            "weight": 50
+          }
+        ],
+        "internal": []
+      }
+    },
+    "<studentid>": {
+      "score": 100,
+      "result": {
+        "external": [
+          {
+            "message": "linux can ping 8.8.8.8",
+            "ans": true,
+            "weight": 50
+          },
+          {
+            "message": "sudo can no password",
+            "ans": true,
+            "weight": 50
+          }
+        ],
+        "internal": []
+      }
+    },
+    ...
+  }
+}
 ```
 
 ## How to write a Lab check code
