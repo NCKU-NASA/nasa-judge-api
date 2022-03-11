@@ -3,6 +3,7 @@ NCKU NASA judge api service
 
 - [Install](#Install)
 - [Remove](#Remove)
+- [Make a git dir for this repo at installed host](#make-a-git-dir-for-this-repo-at-installed-host)
 - [Api](#Api)
 - [How to write a Lab check code](#how-to-write-a-lab-check-code)
 ## Install
@@ -61,6 +62,32 @@ bash /etc/nasajudgeserver/addvpnuser.sh <username>
 git clone https://github.com/NCKU-NASA/nasa-judge-api
 cd nasa-judge-api
 sh remove.sh
+```
+
+## Make a git dir for this repo at installed host
+1. clone this repo and cd into nasa-judge-api.
+
+```bash
+git clone https://github.com/NCKU-NASA/nasa-judge-api
+cd nasa-judge-api
+```
+2. Run setupgit.sh
+```bash
+bash setupgit.sh
+```
+
+3. cd into `/tmp/nasa-judge-api`
+```bash
+cd /tmp/nasa-judge-api
+```
+
+4. and you can run `git status` and `git diff` to see what you change in `/etc/nasajudgeapi/`
+```bash
+$ git status
+On branch master
+Your branch is up to date with 'origin/master'.
+
+nothing to commit, working tree clean
 ```
 
 ## Api
