@@ -1,6 +1,9 @@
 # nasa-judge-api
 NCKU NASA judge api service
 
+- [Install](#Install)
+- [Remove](#Remove)
+
 ## Install
 1. clone this repo and cd into nasa-judge-api.
 
