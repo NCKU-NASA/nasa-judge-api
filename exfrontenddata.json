@@ -1,7 +1,7 @@
 {
   "labId": "<labid>",
   "studentId": "<studentid>",
-  "wanip": "this value will auto get from wireguard",
+  "wanip": "this value frontend didn't give but it will auto get from wireguard",
   "data": [
     {
       "type": "value",
