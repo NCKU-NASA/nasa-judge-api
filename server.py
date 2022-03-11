@@ -22,21 +22,37 @@ def check():
     #if type(ipaddress.ip_address(request.form["cltip"])).__name__ != 'IPv4Address':
     #    return 'error'
     data = json.loads(request.get_data())
-    while len(nodes) <= 0:
-        time.sleep(0.1)
-    nownode = nodes.pop(0)
+    with open('lab/' + data['labId'] + '/data.json', 'r') as f:
+        labdata = json.loads(f.read())
+    if not labdata['checkonhost']:
+        while len(nodes) <= 0:
+            time.sleep(0.1)
+        nownode = nodes.pop(0)
     try:
         data['wanip'] = os.popen('grep -B 1 -A 3 "# ' + data['studentId'] + '" /etc/wireguard/server.conf | grep -oP \'(?<=AllowedIPs\s=\s)\d+(\.\d+){3}\' | tail -n 1').read().strip()
-        with open('/tmp/getdata.json', 'w') as f:
-            f.write(json.dumps(data))
-        os.system('ssh root@' + nownode + ' rm -r judgescript')
-        os.system('scp -r lab/' + data['labId'] + ' root@' + nownode + ':judgescript')
-        os.system('scp ' + os.path.join('/tmp', 'getdata.json') + ' root@' + nownode + ':judgescript/getdata.json')
-        getans = os.popen('ssh root@' + nownode + ' "cd judgescript/; python3 judge.py; cd ~; rm -r judgescript"').read().strip()
-    except:
-        os.system('ssh root@' + nownode + ' "bash judgescript/clear.sh; rm -r judgescript"')
-    nodes.append(nownode)
+        if labdata['checkonhost']:
+            os.system('rm -r /tmp/judgescript')
+            os.system('cp -r lab/' + data['labId'] + ' /tmp/judgescript')
+            with open('/tmp/judgescript/getdata.json', 'w') as f:
+                f.write(json.dumps(data))
+            getans = os.popen('cd /tmp/judgescript/; python3 judge.py ' + data['labId'] + '; cd /tmp; rm -r judgescript"').read().strip()
+        else:
+            with open('/tmp/getdata.json', 'w') as f:
+                f.write(json.dumps(data))
+            os.system('ssh root@' + nownode + ' rm -r judgescript')
+            os.system('scp -r lab/' + data['labId'] + ' root@' + nownode + ':judgescript')
+            os.system('scp ' + os.path.join('/tmp', 'getdata.json') + ' root@' + nownode + ':judgescript/getdata.json')
+            getans = os.popen('ssh root@' + nownode + ' "cd judgescript/; python3 judge.py ' + data['labId'] + '; cd ~; rm -r judgescript"').read().strip()
+    except Exception as ex:
+        print(ex, file=sys.stderr)
+        os.system('ssh root@' + nownode + ' "bash judgescript/clear.sh ' + str(labdata['checkonhost']) + '; rm -r judgescript"')
+    if not labdata['checkonhost']:
+        nodes.append(nownode)
     return getans
+
+@app.route('/alive',methods=['GET'])
+def alive():
+    return "true"
 
 @app.route('/serverlist',methods=['GET'])
 def serverlist():

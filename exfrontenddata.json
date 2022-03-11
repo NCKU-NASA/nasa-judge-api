@@ -1,0 +1,32 @@
+{
+  "labId": "<labid>",
+  "studentId": "<studentid>",
+  "wanip": "this value will auto get from wireguard",
+  "data": [
+    {
+      "type": "value",
+      "name": "<variable name>",
+      "data": "<plain text>"
+    },
+    {
+      "type": "file",
+      "name": "<file name>",
+      "data": "<base64 data>"
+    },
+    {
+      "type": "value",
+      "name": "variable_a",
+      "data": "aaa"
+    },
+    {
+      "type": "value",
+      "name": "variable_b",
+      "data": "bbb"
+    },
+    {
+      "type": "file",
+      "name": "test.txt",
+      "data": "YWFhYWFhYWFhYWFhCg=="
+    }
+  ]
+}
