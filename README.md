@@ -308,5 +308,35 @@ wget
 
 6. Write shell script that you need to do at judge beginning at [start.sh](/lab/template/start.sh). please write your code in the end of file and keep the original code.
 7. Write shell script that you need to do at end of judge at [clear.sh](/lab/template/clear.sh). please write your code in the end of file and keep the original code.
-8. Write your check point code at [external](/lab/template/external) [internal](/lab/template/internal) dir. one check point one main script and main script file name must be same as a index in data.json external or internal list.
-9. You can
+8. Write your check point script at [external](/lab/template/external) or [internal](/lab/template/internal) dir. one check point one main script and main script file name must be same as a index in data.json external or internal list, file extension name must be `.sh`.
+9. Do not print any thing except `true` or `false` answer at `stdout` in check point script please print at `stderr`.
+10. You can use file which frontend give ([exfrontenddata.json](/exfrontenddata.json)) in your check point script with a file name in `name`. For Example:
+``` bash
+#!/bin/bash
+
+if [ "$(cat test.txt)" != "aaaaaaaaaaaa" ]
+then 
+  echo false
+  exit 0
+fi
+echo true
+```
+> :warning: **If you want to use default `judge.py`, don't add any `judge.py` at lab dir.**
+11. If you want to write all of judge.py by you self please add a file at lab dir. When judge begining, frontend's json will save at `getdata.json`, and output at `stdout` must be like:
+```
+{
+  "external": [
+    {
+      "message": "linux can ping 8.8.8.8",
+      "ans": true,
+      "weight": 50
+    },
+    {
+      "message": "sudo can no password",
+      "ans": true,
+      "weight": 50
+    }
+  ],
+  "internal": []
+}
+```
