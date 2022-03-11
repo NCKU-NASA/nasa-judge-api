@@ -2,12 +2,7 @@ import os
 import sys
 import json
 import time
-import sys
 import base64
-
-if len(sys.argv) < 2:
-    print("usage: python3 judge.py <labid>")
-    exit()
 
 with open('data.json', 'r') as f:
     data = json.loads(f.read())
@@ -51,12 +46,12 @@ def judging(nowkey, index, checkpoint):
                         break
 
     if canjudge:
-        nowargs = checkpoint['args'].replace('<studentId>', getdata['studentId']).replace('<wanip>', getdata['wanip'])
+        nowargs = checkpoint['args'].replace('<studentId>', getdata['studentId']).replace('<wanip>', getdata['wanip']).replace('<labId>', getdata['labId'])
         for a in getdata['data']:
             if a['type'] == 'value':
                 nowargs = nowargs.replace('<' + a['name'] + '>', a['data'])
 
-        print(sys.argv[1] + ': bash ' + nowkey + '/' + str(index) + '.sh ' + nowargs, file=sys.stderr)
+        print(getdata['labId'] + ': bash ' + nowkey + '/' + str(index) + '.sh ' + nowargs, file=sys.stderr)
         
         if not checkonhost:
             with open('/etc/resolv.conf', 'r') as f:

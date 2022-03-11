@@ -33,16 +33,20 @@ def check():
         if labdata['checkonhost']:
             os.system('rm -r /tmp/judgescript')
             os.system('cp -r lab/' + data['labId'] + ' /tmp/judgescript')
+            if not os.path.isfile('lab/' + data['labId'] + '/judge.py'):
+                os.system('cp judge.py /tmp/judgescript/judge.py')
             with open('/tmp/judgescript/getdata.json', 'w') as f:
                 f.write(json.dumps(data))
-            getans = os.popen('cd /tmp/judgescript/; python3 judge.py ' + data['labId'] + '; cd /tmp; rm -r judgescript"').read().strip()
+            getans = os.popen('cd /tmp/judgescript/; python3 judge.py; cd /tmp; rm -r judgescript"').read().strip()
         else:
             with open('/tmp/getdata.json', 'w') as f:
                 f.write(json.dumps(data))
             os.system('ssh root@' + nownode + ' rm -r judgescript')
             os.system('scp -r lab/' + data['labId'] + ' root@' + nownode + ':judgescript')
+            if not os.path.isfile('lab/' + data['labId'] + '/judge.py'):
+                os.system('scp judge.py root@' + nownode + ':judgescript/judge.py')
             os.system('scp ' + os.path.join('/tmp', 'getdata.json') + ' root@' + nownode + ':judgescript/getdata.json')
-            getans = os.popen('ssh root@' + nownode + ' "cd judgescript/; python3 judge.py ' + data['labId'] + '; cd ~; rm -r judgescript"').read().strip()
+            getans = os.popen('ssh root@' + nownode + ' "cd judgescript/; python3 judge.py; cd ~; rm -r judgescript"').read().strip()
     except Exception as ex:
         print(ex, file=sys.stderr)
         os.system('ssh root@' + nownode + ' "bash judgescript/clear.sh ' + str(labdata['checkonhost']) + '; rm -r judgescript"')
