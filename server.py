@@ -58,12 +58,11 @@ def alive():
 def serverlist():
     return json.dumps(nodes)
 
-@app.route('/getdbscore',methods=['GET'])
-def getdbscore():
+@app.route('/getdbscore/<path:path>',methods=['GET'])
+def getdbscorepath(path):
     showresult = False
-    for a in range(1,len(sys.argv)):
-        if sys.argv[a] == '-r':
-            showresult = True
+    if path == 'result':
+        showresult = True
 
     # 建立Connection物件
     conn = pymysql.connect(**db_settings)
@@ -87,6 +86,10 @@ def getdbscore():
             if showresult:
                 allscore[a[0]][a[1]]['result'] = json.loads(a[3])
     return json.dumps(allscore)
+
+@app.route('/getdbscore',methods=['GET'])
+def getdbscore():
+    return getdbscorepath('')
 
 @app.errorhandler(404)
 def page_not_found(e):
