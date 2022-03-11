@@ -251,7 +251,7 @@ labId, studentId and wanip is default variable. You can add new variable in data
     - which check point need to be true
   - checkformula
     - check point formula use with attribute `check`
-```
+``` json
 {
   "checkonhost": false,
   "external": [
@@ -294,3 +294,19 @@ labId, studentId and wanip is default variable. You can add new variable in data
   ]
 }
 ```
+
+5. write which package you need to install at worker at [package.conf](/lab/template/package.conf) like:
+```
+curl
+dnsutils
+git
+jq
+lsb-release
+sshpass
+wget
+```
+
+6. Write shell script that you need to do at judge beginning at [start.sh](/lab/template/start.sh). please write your code in the end of file and keep the original code.
+7. Write shell script that you need to do at end of judge at [clear.sh](/lab/template/clear.sh). please write your code in the end of file and keep the original code.
+8. Write your check point code at [external](/lab/template/external) [internal](/lab/template/internal) dir. one check point one main script and main script file name must be same as a index in data.json external or internal list.
+9. You can
