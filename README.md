@@ -3,7 +3,7 @@ NCKU NASA judge api service
 
 - [Install](#Install)
 - [Remove](#Remove)
-
+- [How to write a Lab check code](#how-to-write-a-lab-check-code)
 ## Install
 1. clone this repo and cd into nasa-judge-api.
 
