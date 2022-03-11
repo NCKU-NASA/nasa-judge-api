@@ -185,3 +185,52 @@ true
 ```
 
 ## How to write a Lab check code
+1. clone this repo and cd into nasa-judge-api.
+
+```bash
+git clone https://github.com/NCKU-NASA/nasa-judge-api
+cd nasa-judge-api
+```
+
+2. copy `lab/template/` dir to `lab/<Labid>/`
+``` bash
+cp -r lab/template/ lab/<Labid>/
+# cp -r lab/template/ lab/Lab01/
+```
+
+3. frontend will give you a judge json data like [exfrontenddata.json](/exfrontenddata.json):
+
+``` json
+{
+  "labId": "<labid>",
+  "studentId": "<studentid>",
+  "wanip": "this value frontend didn't give but it will auto get from wireguard",
+  "data": [
+    {
+      "type": "value",
+      "name": "<variable name>",
+      "data": "<plain text>"
+    },
+    {
+      "type": "file",
+      "name": "<file name>",
+      "data": "<base64 data>"
+    },
+    {
+      "type": "value",
+      "name": "variable_a",
+      "data": "aaa"
+    },
+    {
+      "type": "value",
+      "name": "variable_b",
+      "data": "bbb"
+    },
+    {
+      "type": "file",
+      "name": "test.txt",
+      "data": "YWFhYWFhYWFhYWFhCg=="
+    }
+  ]
+}
+```
