@@ -321,8 +321,8 @@ then
 fi
 echo true
 ```
-> :warning: **If you want to use default `judge.py`, don't add any `judge.py` at lab dir.**
 11. If you want to write all of judge.py by you self please add a file at lab dir. When judge begining, frontend's json will save at `getdata.json`, and output at `stdout` must be like:
+> :warning: **If you want to use default `judge.py`, don't add any `judge.py` at lab dir.**
 ```
 {
   "external": [
