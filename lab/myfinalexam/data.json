@@ -1,4 +1,5 @@
 {
+  "checkonhost": false,
   "external": [
     {
       "message": "讓外部使用者可由 http://www.<studentId>.finalexam.ncku 與 https://www.<studentId>.finalexam.ncku 瀏覽 srv2 的 web server",

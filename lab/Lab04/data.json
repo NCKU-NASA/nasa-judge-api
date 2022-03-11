@@ -1,4 +1,5 @@
 {
+  "checkonhost": false,
   "external": [
     {
       "message": "check vm have 2 additional 10GB disks",

@@ -1,0 +1,41 @@
+{
+  "checkonhost": false,
+  "external": [
+    {
+      "message": "<your check point narrative>",
+      "args": "{all variable that this check point will use}",
+      "weight": <how many score in this check point>,
+      "check": {
+          "<which check point need to be true>"
+      },
+      "checkformula": "<check point formula use with attribute \"check\">"
+    },
+    {
+      "message": "example",
+      "args": "<wanip> <studentId> <variable_a> <variable_b>",
+      "weight": 20
+    },
+    {
+      "message": "linux can ping 8.8.8.8",
+      "args": "<wanip> <studentId>",
+      "weight": 20
+    },
+    {
+      "message": "sudo can no password",
+      "args": "<wanip> <studentId>",
+      "weight": 20,
+      "check": {
+          "external": [1,2],
+          "internal": [0]
+      },
+      "checkformula": "ansdb[\"external\"][1] and ansdb[\"external\"][2] and ansdb[\"internal\"][0]"
+    }
+  ],
+  "internal": [
+    {
+      "message": "something check in student lan (it will use in NA)",
+      "args": "<wanip> <studentId>",
+      "weight": 20
+    }
+  ]
+}

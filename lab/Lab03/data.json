@@ -1,4 +1,5 @@
 {
+  "checkonhost": false,
   "external": [
     {
       "message": "check user exist and in sudo group(check with `groups USERNAME`)",

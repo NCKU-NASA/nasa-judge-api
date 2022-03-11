@@ -9,7 +9,7 @@ cd nasa-judge-api
 
 for a in $(ls -a)
 do
-    if [ "$a" != "." ] && [ "$a" != ".." ] && [ "$a" != ".git" ] && [ "$a" != "README.md" ] && [ "$a" != "install.sh" ] && [ "$a" != "remove.sh" ] && [ "$a" != "setupdefaultiptables.sh" ] && [ "$a" != "iptablesconf.conf" ] && [ "$a" != "setupgit.sh" ] && [ "$a" != "db.conf" ]
+    if [ "$a" != "." ] && [ "$a" != ".." ] && [ "$a" != ".git" ] && [ "$a" != "README.md" ] && [ "$a" != "install.sh" ] && [ "$a" != "remove.sh" ] && [ "$a" != "setupdefaultiptables.sh" ] && [ "$a" != "iptablesconf.conf" ] && [ "$a" != "setupgit.sh" ] && [ "$a" != "db.conf" ] && [ "$a" != "exfrontenddata.json" ]
     then
         rm -rf $a
     fi

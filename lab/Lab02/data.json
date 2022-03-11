@@ -1,4 +1,5 @@
 {
+  "checkonhost": false,
   "external": [
     {
       "message": "check docker container exist and name correct",

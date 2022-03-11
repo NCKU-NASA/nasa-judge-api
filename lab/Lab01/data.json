@@ -1,4 +1,5 @@
 {
+  "checkonhost": false,
   "external": [
     {
       "message": "linux can ping 8.8.8.8",
