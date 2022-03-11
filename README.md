@@ -61,3 +61,5 @@ git clone https://github.com/NCKU-NASA/nasa-judge-api
 cd nasa-judge-api
 sh remove.sh
 ```
+
+## How to write a Lab check code
