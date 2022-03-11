@@ -199,7 +199,7 @@ cp -r lab/template/ lab/<Labid>/
 ```
 
 3. frontend will give you a judge json data like [exfrontenddata.json](/exfrontenddata.json):
-
+studentId, wanip is default variable
 ``` json
 {
   "labId": "<labid>",
