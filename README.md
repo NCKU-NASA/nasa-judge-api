@@ -199,7 +199,8 @@ cp -r lab/template/ lab/<Labid>/
 ```
 
 3. frontend will give you a judge json data like [exfrontenddata.json](/exfrontenddata.json):
-studentId, wanip is default variable
+
+labId, studentId and wanip is default variable. You can add new variable in data. If type is `value` it is variable else if type is `file` it is file.
 ``` json
 {
   "labId": "<labid>",
@@ -230,6 +231,65 @@ studentId, wanip is default variable
       "type": "file",
       "name": "test.txt",
       "data": "YWFhYWFhYWFhYWFhCg=="
+    }
+  ]
+}
+```
+4. Write your lab's [data.json](/lab/template/data.json):
+
+- checkonhost (default is `false`)
+  - If it is `true` that mean this lab don't use worker to check VM, it just for check such like student's examination paper.
+- external & internal
+  - that mean the check points under this attribute will test at external or internal.
+  - message
+    - your check point narrative
+  - args
+    - all variable that this check point will use(not file. ps: which variable type is file.)
+  - weight
+    - how many score in this check point
+  - check
+    - which check point need to be true
+  - checkformula
+    - check point formula use with attribute `check`
+```
+{
+  "checkonhost": false,
+  "external": [
+    {
+      "message": "<your check point narrative>",
+      "args": "{all variable that this check point will use}",
+      "weight": <how many score in this check point>,
+      "check": {
+          "<which check point need to be true>"
+      },
+      "checkformula": "<check point formula use with attribute \"check\">"
+    },
+    {
+      "message": "example",
+      "args": "<wanip> <studentId> <variable_a> <variable_b>",
+      "weight": 20
+    },
+    {
+      "message": "linux can ping 8.8.8.8",
+      "args": "<wanip> <studentId>",
+      "weight": 20
+    },
+    {
+      "message": "sudo can no password",
+      "args": "<wanip> <studentId>",
+      "weight": 20,
+      "check": {
+          "external": [1,2],
+          "internal": [0]
+      },
+      "checkformula": "ansdb[\"external\"][1] and ansdb[\"external\"][2] and ansdb[\"internal\"][0]"
+    }
+  ],
+  "internal": [
+    {
+      "message": "something check in student lan (it will use in NA)",
+      "args": "<wanip> <studentId>",
+      "weight": 20
     }
   ]
 }
