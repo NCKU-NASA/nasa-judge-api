@@ -73,7 +73,8 @@ try:
     for key in keys:
         if data.__contains__(key):
             for i in range(len(data[key])):
-                judging(key, i, data[key][i])
+                if not ansdb[key].__contains__(i):
+                    judging(key, i, data[key][i])
 
     for key in keys:
         if data.__contains__(key):
