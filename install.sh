@@ -142,7 +142,7 @@ fi
 
 if [ "$(sed 's/ //g;s/\t//g' /etc/bind/named.conf.options | grep "allow-query{any;};")" == "" ]
 then
-	sed "$(($(wc -l < /etc/bind/named.conf.options)-1)) aallow-query { any; };" /etc/bind/named.conf.options
+	sed -i "$(($(wc -l < /etc/bind/named.conf.options)-1)) aallow-query { any; };" /etc/bind/named.conf.options
 	sudo systemctl reload named.service
 	sudo systemctl restart named.service
 fi
