@@ -44,14 +44,15 @@ sudo systemctl restart nasasqlsshtunnel.service
 ![image](https://user-images.githubusercontent.com/57281249/157760749-37bbc2e8-d626-47cd-87ee-5d0a4658c07f.png)
 
 7. change `iptablesconf.conf` lan ip from `192.168.123.0/24` to your lan ip's network id(it must be /24) and run `setupdefaultiptables.sh` to setup your iptables.
-8. set all your worker allow ssh root login ther root `.ssh/id_rsa` and `.ssh/id_rsa.pub` must be same. get your worker's `.ssh/id_rsa.pub` send to frontend and send your nasajudgeapi host's root ssh pub key `.ssh/id_rsa.pub` to your all worker's `.ssh/authorized_keys`
-9. use `setupnode.sh` to search and config your worker.
+8. change all of `clear.sh` in `lab`[clear.sh](/lab/template/clear.sh) ip from `192.168.123.254` to your lan dns server ip.
+9. set all your worker allow ssh root login ther root `.ssh/id_rsa` and `.ssh/id_rsa.pub` must be same. get your worker's `.ssh/id_rsa.pub` send to frontend and send your nasajudgeapi host's root ssh pub key `.ssh/id_rsa.pub` to your all worker's `.ssh/authorized_keys`
+10. use `setupnode.sh` to search and config your worker.
 ``` bash
 bash setupnode.sh <your workernode lan area interface ip> <min> <max>
 # ex:
 # bash setupnode.sh 192.168.123.254 100 200
 ```
-10. add your student vpn config with `addvpnuser.sh`
+11. add your student vpn config with `addvpnuser.sh`
 ``` bash
 bash /etc/nasajudgeserver/addvpnuser.sh <username>
 ```
