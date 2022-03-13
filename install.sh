@@ -92,7 +92,7 @@ INSTALL_PYTHON_PATH=python${INSTALL_PYTHON_VERSION:-3.7}
 
 echo "Python version is $INSTALL_PYTHON_VERSION"
 
-sudo apt-get install -y wireguard bind9 curl wget
+sudo apt-get install -y wireguard bind9 curl wget iptables
 set +e
 rm -r VpnGenerator
 set -e
