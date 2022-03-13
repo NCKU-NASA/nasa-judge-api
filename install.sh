@@ -109,6 +109,11 @@ then
 	sudo mkdir /etc/wireguard/client2
 fi
 
+for filename in testserverfirewall.sh
+do
+	sudo cp -r $filename /etc/wireguard/
+done
+
 if [ ! -f /etc/wireguard/server.conf ]
 then
 	sudo bash /etc/wireguard/addwgserver.sh -n server -i 10.100.100.254/24 -p 7654
@@ -159,11 +164,6 @@ set -e
 for filename in lab requirements.txt server.py server.sh judge.py testcheck.py .gitignore setupnode.sh addvpnuser.sh
 do
 	sudo cp -r $filename /etc/nasajudgeapi/
-done
-
-for filename in testserverfirewall.sh
-do
-	sudo cp -r $filename /etc/wireguard/
 done
 
 for filename in node.conf db.conf
