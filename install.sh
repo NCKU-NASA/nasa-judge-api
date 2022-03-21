@@ -143,9 +143,17 @@ fi
 if [ "$(sed 's/ //g;s/\t//g' /etc/bind/named.conf.options | grep "allow-query{any;};")" == "" ]
 then
 	sed -i "$(($(wc -l < /etc/bind/named.conf.options)-1)) aallow-query { any; };" /etc/bind/named.conf.options
-	sudo systemctl reload named.service
-	sudo systemctl restart named.service
 fi
+if [ "$(sed 's/ //g;s/\t//g' /etc/bind/named.conf.options | grep "max-ncache-ttl0;")" == "" ]
+then
+	sed -i "$(($(wc -l < /etc/bind/named.conf.options)-1)) amax-ncache-ttl 0;" /etc/bind/named.conf.options
+fi
+if [ "$(sed 's/ //g;s/\t//g' /etc/bind/named.conf.options | grep "max-cache-ttl0;")" == "" ]
+then
+	sed -i "$(($(wc -l < /etc/bind/named.conf.options)-1)) amax-cache-ttl 0;" /etc/bind/named.conf.options
+fi
+sudo systemctl reload named.service
+sudo systemctl restart named.service
 
 if [ "$(sudo ls /root/.ssh/id_rsa)" == "" ]
 then
