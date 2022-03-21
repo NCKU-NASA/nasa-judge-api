@@ -1,0 +1,35 @@
+{
+  "checkonhost": false,
+  "external": [
+    {
+      "message": "Check if /opt/pi exist",
+      "args": "<wanip> <studentId>",
+      "weight": 10
+    },
+    {
+      "message": "Check the state of pi.service",
+      "args": "<wanip> <studentId>",
+      "weight": 10
+    },
+    {
+      "message": "Check pi.service CPU limitation",
+      "args": "<wanip> <studentId>",
+      "weight": 20
+    },
+    {
+      "message": "Check pi.service Memory limitation",
+      "args": "<wanip> <studentId>",
+      "weight": 20
+    },
+    {
+      "message": "Check crontab config",
+      "args": "<wanip> <studentId>",
+      "weight": 20
+    },
+    {
+      "message": "Check crontab running correctly",
+      "args": "<wanip> <studentId>",
+      "weight": 20
+    }
+  ]
+}
