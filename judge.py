@@ -1,5 +1,6 @@
 import os
 import sys
+import re
 import json
 import time
 import base64
@@ -23,6 +24,9 @@ ans={'external':[],'internal':[]}
 ansdb={'external':{},'internal':{}}
 keys=list(ans.keys())
 
+def replaceargs(allargs, argname, argvalue):
+    argvalue = re.sub(r'[^a-zA-Z0-9.\-_:]*', '', argvalue)
+    return allargs.replace('<' + argname + '>', argvalue)
 
 def judging(nowkey, index, checkpoint):
     canjudge = True
@@ -46,10 +50,12 @@ def judging(nowkey, index, checkpoint):
                         break
 
     if canjudge:
-        nowargs = checkpoint['args'].replace('<studentId>', getdata['studentId']).replace('<wanip>', getdata['wanip']).replace('<labId>', getdata['labId'])
+        nowargs = replaceargs(checkpoint['args'], 'studentId', getdata['studentId'])
+        nowargs = replaceargs(nowargs, 'wanip', getdata['wanip'])
+        nowargs = replaceargs(nowargs, 'labId', getdata['labId'])
         for a in getdata['data']:
             if a['type'] == 'value':
-                nowargs = nowargs.replace('<' + a['name'] + '>', a['data'])
+                nowargs = replaceargs(nowargs, a['name'], a['data'])
 
         print(getdata['labId'] + ': bash ' + nowkey + '/' + str(index) + '.sh ' + nowargs, file=sys.stderr)
         
