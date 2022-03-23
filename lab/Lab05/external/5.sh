@@ -7,7 +7,7 @@ fi
 
 dt="$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 'cat /var/log/pi.log | head -n 1 | awk -v date=$(date +%s) "{print date-\$1}"')"
 
-if [ "$dt" == "" ] || [ $dt -gt 65 ]
+if [ "$dt" == "" ] || [ "$dt" == "-inf" ] || [ $dt -gt 65 ]
 then
     echo false
     exit 0
