@@ -5,7 +5,7 @@ then
     exit 0
 fi
 
-if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 systemctl show pi --no-page | grep ActiveState)" != "ActiveState=active" ]
+if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 sudo systemctl show pi --no-page | grep ActiveState)" != "ActiveState=active" ]
 then
     echo false
     exit 0

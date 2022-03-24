@@ -5,7 +5,7 @@ then
     exit 0
 fi
 
-if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 systemctl show pi --no-page | grep 10485760)" == "" ]
+if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 sudo systemctl show pi --no-page | grep 10485760)" == "" ]
 then
     echo false
     exit 0
