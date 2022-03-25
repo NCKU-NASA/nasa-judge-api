@@ -5,7 +5,7 @@ then
     exit 0
 fi
 
-if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 cat /etc/crontab | grep date | grep pi.log | awk '{print $1$2$3$4$5}')" != "*****" ]
+if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 sudo cat /etc/crontab | grep date | grep pi.log | awk '{print $1$2$3$4$5}')" != "*****" ]
 then
     echo false
     exit 0
