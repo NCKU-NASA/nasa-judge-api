@@ -6,21 +6,42 @@ then
    exit 0
 fi
 
-userneedtest=$(shuf -n 3 userbag)
+sed -i 's/PasswordAuthentication=no/PasswordAuthentication=yes/g' ~/.ssh/config
 
+userneedtest=$(cat userbag | sed 's/ /\n/g' | shuf -n 3)
+
+bad=false
 for user in ${userneedtest[@]};
 do
-    if [ "$(ssh $(echo "$user" | awk '{print tolower($0)}')@$1 whoami)" != "$user" ]
+    if [ "$(sshpass -p $(cat userconfig | grep "^$user " | awk '{print $2}') ssh $(echo "$user" | awk '{print tolower($0)}')@$1 whoami)" != "$user" ]
     then
         echo false
-        exit 0
+        bad=true
+        break
     fi
 done
 
+sed -i 's/PasswordAuthentication=yes/PasswordAuthentication=no/g' ~/.ssh/config
 
-# TODO
-# 1. remove user from student computer with userbag
-# 2. remove group from student computer with groupbag
+
+ssh $(echo "$2" | awk '{print tolower($0)}')@$1 "
+for user in $(cat userbag)"'
+do
+    sudo userdel -rf $user 2>/dev/null
+done
+'
+
+ssh $(echo "$2" | awk '{print tolower($0)}')@$1 "
+for group in $(cat groupbag)"'
+do
+    sudo groupdel $group 2>/dev/null
+done
+'
+
+if $bad
+then
+    exit 0
+fi
 
 echo true
 

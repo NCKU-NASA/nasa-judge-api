@@ -3,20 +3,20 @@ groupbag=();
 userbag=();
 for i in $(seq 15);
 do
-    groupbag[$i-1]=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 5);
+    groupbag[$i-1]=$(head /dev/urandom | tr -dc a-z1-9 | head -c 5);
 done
 
 for i in $(seq 200);
 do
-    userbag[$i-1]=$(head /dev/urandom | tr -dc a-z0-9 | head -c 7);
+    userbag[$i-1]=$(head /dev/urandom | tr -dc a-z1-9 | head -c 7);
 done
 
 groupnum=${#groupbag[*]};
-echo > userconfig;
+> userconfig;
 for user in ${userbag[@]};
 do
     echo -n $user >> userconfig;
-    echo -n " $(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 8)" >> userconfig;
+    echo -n " $(head /dev/urandom | tr -dc A-Za-z1-9 | head -c 8)" >> userconfig;
 
     ausergroups=();
     for i in $(seq $(($RANDOM%14)));

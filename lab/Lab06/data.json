@@ -4,12 +4,12 @@
     {
       "message": "User's information is correct",
       "args": "<wanip> <studentId>",
-      "weight": 10
+      "weight": 50
     },
     {
       "message": "User can login with ssh normally",
       "args": "<wanip> <studentId>",
-      "weight": 10
+      "weight": 50
     }
   ]
 }
