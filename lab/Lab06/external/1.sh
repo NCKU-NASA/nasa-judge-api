@@ -7,6 +7,7 @@ then
 fi
 
 sed -i 's/PasswordAuthentication=no/PasswordAuthentication=yes/g' ~/.ssh/config
+echo 'PubkeyAuthentication=no' >> ~/.ssh/config
 
 userneedtest=$(cat userbag | sed 's/ /\n/g' | shuf -n 3)
 
@@ -22,7 +23,7 @@ do
 done
 
 sed -i 's/PasswordAuthentication=yes/PasswordAuthentication=no/g' ~/.ssh/config
-
+sed -i '/PubkeyAuthentication=no/d' ~/.ssh/config
 
 ssh $(echo "$2" | awk '{print tolower($0)}')@$1 "
 for user in $(cat userbag)"'

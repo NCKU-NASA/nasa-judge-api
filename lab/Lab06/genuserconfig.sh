@@ -3,12 +3,12 @@ groupbag=();
 userbag=();
 for i in $(seq 15);
 do
-    groupbag[$i-1]=$(head /dev/urandom | tr -dc a-z1-9 | head -c 5);
+    groupbag[$i-1]=$(echo $(head /dev/urandom | tr -dc a-z | head -c 1)$(head /dev/urandom | tr -dc a-z1-9 | head -c 4))
 done
 
-for i in $(seq 200);
+for i in $(seq $(($RANDOM%100 + 200)));
 do
-    userbag[$i-1]=$(head /dev/urandom | tr -dc a-z1-9 | head -c 7);
+    userbag[$i-1]=$(echo $(head /dev/urandom | tr -dc a-z | head -c 1)$(head /dev/urandom | tr -dc a-z1-9 | head -c 6))
 done
 
 groupnum=${#groupbag[*]};
