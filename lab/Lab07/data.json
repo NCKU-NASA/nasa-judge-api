@@ -1,0 +1,25 @@
+{
+  "checkonhost": false,
+  "external": [
+    {
+      "message": "Hostname is correct",
+      "args": "<wanip> <studentId>",
+      "weight": 25
+    },
+    {
+      "message": "There are four interfaces lan1, lan2, lan3, lan4",
+      "args": "<wanip> <studentId>",
+      "weight": 25
+    },
+    {
+      "message": "Bridge the four interfaces and set the bridge interface name to LAN",
+      "args": "<wanip> <studentId>",
+      "weight": 25
+    },
+    {
+      "message": "IP address of the LAN interface is set correctly",
+      "args": "<wanip> <studentId>",
+      "weight": 25
+    }
+  ]
+}
