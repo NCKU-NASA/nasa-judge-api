@@ -5,6 +5,7 @@ import ipaddress
 import re
 import pymysql
 import sys
+import uuid
 #import charts
 
 from flask import Flask,request,redirect,Response,make_response,jsonify,render_template,session,send_file
@@ -28,6 +29,8 @@ def check():
         while len(nodes) <= 0:
             time.sleep(0.1)
         nownode = nodes.pop(0)
+    outlog=""
+    errlog=""
     try:
         data['wanip'] = os.popen('grep -B 1 -A 3 "# ' + data['studentId'] + '" /etc/wireguard/server.conf | grep -oP \'(?<=AllowedIPs\s=\s)\d+(\.\d+){3}\' | tail -n 1').read().strip()
         if labdata['checkonhost']:
@@ -35,9 +38,22 @@ def check():
             os.system('cp -r lab/' + data['labId'] + ' /tmp/judgescript')
             if not os.path.isfile('lab/' + data['labId'] + '/judge.py'):
                 os.system('cp judge.py /tmp/judgescript/judge.py')
+            if not os.path.isfile('lab/' + data['labId'] + '/onstartjudge.sh'):
+                os.system('cp onstartjudge.sh /tmp/judgescript/onstartjudge.sh')
+            if not os.path.isfile('lab/' + data['labId'] + '/onclearjudge.sh'):
+                os.system('cp onclearjudge.sh /tmp/judgescript/onclearjudge.sh')
             with open('/tmp/judgescript/getdata.json', 'w') as f:
                 f.write(json.dumps(data))
-            getans = os.popen('cd /tmp/judgescript/; python3 judge.py; cd /tmp; rm -r judgescript"').read().strip()
+            getans = os.popen('cd /tmp/judgescript/; python3 judge.py').read().strip()
+            if os.path.isfile('/tmp/judgescript/judgelog'):
+                with open('/tmp/judgescript/judgelog') as f:
+                    outlog = f.read();
+            
+            if os.path.isfile('/tmp/judgescript/judgeerrlog'):
+                with open('/tmp/judgescript/judgeerrlog') as f:
+                    errlog = f.read();
+            
+            os.system('rm -r /tmp/judgescript')
         else:
             with open('/tmp/getdata.json', 'w') as f:
                 f.write(json.dumps(data))
@@ -45,14 +61,34 @@ def check():
             os.system('scp -r lab/' + data['labId'] + ' root@' + nownode + ':judgescript')
             if not os.path.isfile('lab/' + data['labId'] + '/judge.py'):
                 os.system('scp judge.py root@' + nownode + ':judgescript/judge.py')
+            if not os.path.isfile('lab/' + data['labId'] + '/onstartjudge.sh'):
+                os.system('scp onstartjudge.sh root@' + nownode + ':judgescript/onstartjudge.sh')
+            if not os.path.isfile('lab/' + data['labId'] + '/onclearjudge.sh'):
+                os.system('scp onclearjudge.sh root@' + nownode + ':judgescript/onclearjudge.sh')
             os.system('scp ' + os.path.join('/tmp', 'getdata.json') + ' root@' + nownode + ':judgescript/getdata.json')
-            getans = os.popen('ssh root@' + nownode + ' "cd judgescript/; python3 judge.py; cd ~; rm -r judgescript"').read().strip()
+            getans = os.popen('ssh root@' + nownode + ' "cd judgescript/; python3 judge.py"').read().strip()
+            judgelogoutput = str(uuid.uuid4())
+            os.system('scp root@' + nownode + ':judgescript/judgelog /tmp/' + judgelogoutput)
+            if os.path.isfile('/tmp/' + judgelogoutput):
+                with open('/tmp/' + judgelogoutput) as f:
+                    outlog = f.read();
+                os.remove('/tmp/' + judgelogoutput)
+            os.system('scp root@' + nownode + ':judgescript/judgeerrlog /tmp/' + judgelogoutput)
+            if os.path.isfile('/tmp/' + judgelogoutput):
+                with open('/tmp/' + judgelogoutput) as f:
+                    errlog = f.read();
+                os.remove('/tmp/' + judgelogoutput)
+            os.system('ssh root@' + nownode + ' "rm -r judgescript"')
     except Exception as ex:
         print(ex, file=sys.stderr)
-        os.system('ssh root@' + nownode + ' "bash judgescript/clear.sh ' + str(labdata['checkonhost']) + '; rm -r judgescript"')
+        if labdata['checkonhost']:
+            os.system('cd /tmp/judgescript; bash onclearjudge.sh; cd /tmp; rm -r /tmp/judgescript')
+        else:
+            os.system('ssh root@' + nownode + ' "cd judgescript/; bash onclearjudge.sh ' + str(labdata['checkonhost']) + '; cd ~; rm -r judgescript"')
+
     if not labdata['checkonhost']:
         nodes.append(nownode)
-    return getans
+    return json.dumps({'results':json.loads(getans), 'stdout':outlog, 'stderr':errlog})
 
 @app.route('/alive',methods=['GET'])
 def alive():
