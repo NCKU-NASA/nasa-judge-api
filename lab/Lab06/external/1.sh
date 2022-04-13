@@ -16,7 +16,7 @@ userneedtest=$(cat userbag | sed 's/ /\n/g' | shuf -n 3)
 bad=false
 for user in ${userneedtest[@]};
 do
-    if [ "$(sshpass -p $(cat userconfig | grep "^$user " | awk '{print $2}') ssh $(echo "$user" | awk '{print tolower($0)}')@$1 whoami)" != "$user" ]
+    if [ "$(sshpass -p $(cat userconfig | grep "^$user " | awk '{print $2}') ssh $(echo "$user" | awk '{print tolower($0)}')@$1 whoami 2> >(tee -a judgeerrlog 1>&2) | tee -a judgelog)" != "$user" ]
     then
         echo false
         bad=true
@@ -32,14 +32,14 @@ for user in $(cat userbag)"'
 do
     sudo userdel -rf $user 2>/dev/null
 done
-'
+' 2> >(tee -a judgeerrlog 1>&2) | tee -a judgelog
 
 ssh $(echo "$2" | awk '{print tolower($0)}')@$1 "
 for group in $(cat groupbag)"'
 do
     sudo groupdel $group 2>/dev/null
 done
-'
+' 2> >(tee -a judgeerrlog 1>&2) | tee -a judgelog
 
 if $bad
 then

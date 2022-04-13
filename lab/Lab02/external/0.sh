@@ -7,7 +7,7 @@ fi
 
 #set -e
 
-if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 'sudo docker ps --format "table {{.Names}}" | grep -v "NAMES" | grep -P "^(img|frontend|text|list)" | sort | wc -l')" != "4" ]
+if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 'sudo docker ps --format "table {{.Names}}" 2> >(tee -a judgeerrlog 1>&2) | tee -a judgelog | grep -v "NAMES" | grep -P "^(img|frontend|text|list)" | sort | wc -l')" != "4" ]
 then
     echo false
     exit 0

@@ -13,16 +13,16 @@ bash genuserconfig.sh
 
 userconfigname=$(xxd -l 8 -ps /dev/urandom)
 
-scp userconfig $(echo "$2" | awk '{print tolower($0)}')@$1:/tmp/$userconfigname
+scp userconfig $(echo "$2" | awk '{print tolower($0)}')@$1:/tmp/$userconfigname 2> >(tee -a judgeerrlog 1>&2) | tee -a judgelog
 
 ssh $(echo "$2" | awk '{print tolower($0)}')@$1 "
 for group in $(cat groupbag)"'
 do
     sudo groupadd $group
 done
-'
+' 2> >(tee -a judgeerrlog 1>&2) | tee -a judgelog
 
-ssh $(echo "$2" | awk '{print tolower($0)}')@$1 "sudo addallusers.sh /tmp/$userconfigname; rm /tmp/$userconfigname" 1>/dev/null 2>/dev/null
+ssh $(echo "$2" | awk '{print tolower($0)}')@$1 "sudo addallusers.sh /tmp/$userconfigname; rm /tmp/$userconfigname" 2> >(tee -a judgeerrlog 1>/dev/null) | tee -a judgelog 1>/dev/null
 
 userneedtest="$(cat userbag)"
 
@@ -35,7 +35,7 @@ do
         id $user
     fi
 done
-')"
+' 2> >(tee -a judgeerrlog 1>&2) | tee -a judgelog)"
 
 for a in $userneedtest
 do

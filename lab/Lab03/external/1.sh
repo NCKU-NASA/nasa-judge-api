@@ -7,7 +7,7 @@ fi
 
 #set -e
 
-if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 sudo systemctl list-units | grep $3)" == "" ]
+if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 sudo systemctl list-units 2> >(tee -a judgeerrlog 1>&2) | tee -a judgelog | grep $3)" == "" ]
 then
     echo false
     exit 0

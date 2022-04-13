@@ -8,7 +8,7 @@ fi
 
 #set -e
 
-if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 ip a | grep inet | grep LAN | grep 192.168.3.254/24)" == "" ]
+if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 ip a 2> >(tee -a judgeerrlog 1>&2) | tee -a judgelog | grep inet | grep LAN | grep 192.168.3.254/24)" == "" ]
 then
     echo false
     exit 0

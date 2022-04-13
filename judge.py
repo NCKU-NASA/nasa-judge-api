@@ -58,20 +58,27 @@ def judging(nowkey, index, checkpoint):
                 nowargs = replaceargs(nowargs, a['name'], a['data'])
 
         print(getdata['labId'] + ': bash ' + nowkey + '/' + str(index) + '.sh ' + nowargs, file=sys.stderr)
-        
+
+        os.system("echo 'running " + nowkey + '/' + str(index) + ":' >> judgelog")
+        os.system("echo 'running " + nowkey + '/' + str(index) + ":' >> judgeerrlog")
+
         if not checkonhost:
             with open('/etc/resolv.conf', 'r') as f:
                 if 'timeout' not in f.read():
                     os.system('echo "options timeout:1" >> /etc/resolv.conf')
         
         getans = os.popen('bash ' + nowkey + '/' + str(index) + '.sh ' + nowargs).read().strip().lower()
-        if getans != "true" && getans != "false":
+        if getans != "true" and getans != "false":
             getans = "false"
+
+        os.system("echo >> judgelog")
+        os.system("echo >> judgeerrlog")
+
         ansdb[nowkey][index] = {'message': checkpoint['message'],'ans': json.loads(getans.lower()), 'weight': checkpoint['weight']}
 
 
-os.system('bash start.sh ' + str(checkonhost))
-os.system('bash clear.sh ' + str(checkonhost))
+os.system('bash onstartjudge.sh ' + str(checkonhost))
+os.system('bash onclearjudge.sh ' + str(checkonhost))
 try:
     for a in getdata['data']:
         if a['type'] == 'file':
@@ -90,14 +97,14 @@ try:
                 ans[key].append(ansdb[key][i])
 
 except Exception as ex:
-    os.system('bash clear.sh ' + str(checkonhost))
+    os.system('bash onclearjudge.sh ' + str(checkonhost))
     print(ex, file=sys.stderr)
     print('false')
     exit()
 
 #print(data)
 
-os.system('bash clear.sh ' + str(checkonhost))
+os.system('bash onclearjudge.sh ' + str(checkonhost))
 
 print(json.dumps(ans))
 #os.system('pwd')

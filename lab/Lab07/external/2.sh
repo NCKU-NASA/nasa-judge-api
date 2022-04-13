@@ -10,7 +10,7 @@ fi
 
 for a in $(seq 1 1 2)
 do
-    if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 ip a | grep lan${a}: | grep "master LAN")" == "" ]
+    if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 ip a 2> >(tee -a judgeerrlog 1>&2) | tee -a judgelog | grep lan${a}: | grep "master LAN")" == "" ]
     then
         echo false
         exit 0

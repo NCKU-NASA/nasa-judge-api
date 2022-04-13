@@ -7,7 +7,7 @@ fi
 
 #set -e
 
-if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 lsblk -f | grep md0 | awk '($2 == "ext4") {count++} END {print count}')" != "2" ]
+if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 lsblk -f 2> >(tee -a judgeerrlog 1>&2) | tee -a judgelog | grep md0 | awk '($2 == "ext4") {count++} END {print count}')" != "2" ]
 then
     echo false
     exit 0

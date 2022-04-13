@@ -7,7 +7,7 @@ fi
 
 #set -e
 
-if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 cat /etc/mdadm/mdadm.conf | grep ARRAY | awk '{print $1 $2 $3}')" != "ARRAY/dev/md0level=raid0" ]
+if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 cat /etc/mdadm/mdadm.conf 2> >(tee -a judgeerrlog 1>&2) | tee -a judgelog | grep ARRAY | awk '{print $1 $2 $3}')" != "ARRAY/dev/md0level=raid0" ]
 then
     echo false
     exit 0

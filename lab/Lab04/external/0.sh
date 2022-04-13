@@ -7,7 +7,16 @@ fi
 
 #set -e
 
-if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 lsblk | awk '($4 == "10G" && $6 == "disk") {count++} END {print count}')" -lt 2 ]
+diskcont="$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 lsblk 2> >(tee -a judgeerrlog 1>&2) | tee -a judgelog | awk '($4 == "10G" && $6 == "disk") {count++} END {print count}')"
+
+if [ "$diskcont" == "" ]
+then
+    echo false
+    exit 0
+fi
+
+
+if [ "$diskcont" -lt 2 ]
 then
     echo false
     exit 0

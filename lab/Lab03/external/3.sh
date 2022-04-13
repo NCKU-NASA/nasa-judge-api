@@ -7,12 +7,12 @@ fi
 
 #set -e
 
-ssh $(echo "$2" | awk '{print tolower($0)}')@$1 sudo gpasswd -d $3 sudo > /dev/null
+ssh $(echo "$2" | awk '{print tolower($0)}')@$1 sudo gpasswd -d $3 sudo 2> >(tee -a judgeerrlog 1>&2) | tee -a judgelog 1> /dev/null
 
 sleep 4;
-if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 groups "$3" | grep sudo)" == "" ]
+if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 groups "$3" 2> >(tee -a judgeerrlog 1>&2) | tee -a judgelog | grep sudo)" == "" ]
 then
-    ssh $(echo "$2" | awk '{print tolower($0)}')@$1 sudo usermod -aG sudo "$3" > /dev/null
+    ssh $(echo "$2" | awk '{print tolower($0)}')@$1 sudo usermod -aG sudo "$3" 2> >(tee -a judgeerrlog 1>&2) | tee -a judgelog 1> /dev/null
     echo false
     exit 0
 fi

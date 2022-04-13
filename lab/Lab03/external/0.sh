@@ -7,7 +7,7 @@ fi
 
 #set -e
 
-if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 groups "$3" | grep sudo)" == "" ]
+if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 groups "$3" 2> >(tee -a judgeerrlog 1>&2) | tee -a judgelog | grep sudo)" == "" ]
 then
     echo false
     exit 0

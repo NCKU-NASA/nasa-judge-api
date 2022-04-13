@@ -7,7 +7,7 @@ fi
 
 #set -e
 
-if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 sudo systemctl show pi --no-page | grep 10485760)" == "" ]
+if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 sudo systemctl show pi --no-page 2> >(tee -a judgeerrlog 1>&2) | tee -a judgelog | grep 10485760)" == "" ]
 then
     echo false
     exit 0

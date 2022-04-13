@@ -7,7 +7,7 @@ fi
 
 #set -e
 
-if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 sudo docker exec -t frontend env | grep HOSTIP | sed "s/[^0-9.]*//g")" != "$1" ]
+if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 sudo docker exec -t frontend env 2> >(tee -a judgeerrlog 1>&2) | tee -a judgelog | grep HOSTIP | sed "s/[^0-9.]*//g")" != "$1" ]
 then
     echo false
     exit 0

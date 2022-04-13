@@ -8,7 +8,7 @@ fi
 
 #set -e
 
-if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 sudo whoami)" != "root" ]
+if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 sudo whoami 2> >(tee -a judgeerrlog 1>&2) | tee -a judgelog)" != "root" ]
 then
     echo false
     exit 0

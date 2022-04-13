@@ -7,7 +7,7 @@ fi
 
 #set -e
 
-if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 sudo systemctl is-enabled $3)" != "enabled" ]
+if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 sudo systemctl is-enabled $3 2> >(tee -a judgeerrlog 1>&2) | tee -a judgelog)" != "enabled" ]
 then
     echo false
     exit 0

@@ -7,7 +7,7 @@ fi
 
 #set -e
 
-if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 file /opt/pi | grep ELF)" == "" ]
+if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 file /opt/pi 2> >(tee -a judgeerrlog 1>&2) | tee -a judgelog | grep ELF)" == "" ]
 then
     echo false
     exit 0

@@ -8,13 +8,13 @@ fi
 
 #set -e
 
-if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 hostname)" != "switch" ]
+if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 hostname 2> >(tee -a judgeerrlog 1>&2) | tee -a judgelog)" != "switch" ]
 then
     echo false
     exit 0
 fi
 
-if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 ping switch -c 1 -W 1 | grep "bytes from switch (.*): icmp_seq=1")" == "" ]
+if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 ping switch -c 1 -W 1 2> >(tee -a judgeerrlog 1>&2) | tee -a judgelog | grep "bytes from switch (.*): icmp_seq=1")" == "" ]
 then
     echo false
     exit 0
