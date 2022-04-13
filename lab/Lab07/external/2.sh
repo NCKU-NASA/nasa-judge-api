@@ -6,6 +6,7 @@ then
     exit 0
 fi
 
+#set -e
 
 for a in $(seq 1 1 2)
 do
@@ -19,3 +20,4 @@ done
 
 echo true
 
+#set +e

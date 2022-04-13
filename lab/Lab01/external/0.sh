@@ -6,6 +6,8 @@ then
     exit 0
 fi
 
+#set -e
+
 if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 ping 8.8.8.8 -c 1 -W 1 | grep "bytes from 8.8.8.8: icmp_seq=1")" == "" ]
 then
     echo false
@@ -14,3 +16,4 @@ fi
 
 echo true
 
+#set +e

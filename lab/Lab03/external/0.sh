@@ -5,6 +5,7 @@ then
     exit 0
 fi
 
+#set -e
 
 if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 groups "$3" | grep sudo)" == "" ]
 then
@@ -13,4 +14,7 @@ then
 fi
 
 echo true
+
+#set +e
+
 exit 0

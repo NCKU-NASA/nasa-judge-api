@@ -64,7 +64,9 @@ def judging(nowkey, index, checkpoint):
                 if 'timeout' not in f.read():
                     os.system('echo "options timeout:1" >> /etc/resolv.conf')
         
-        getans = os.popen('bash ' + nowkey + '/' + str(index) + '.sh ' + nowargs).read().strip()
+        getans = os.popen('bash ' + nowkey + '/' + str(index) + '.sh ' + nowargs).read().strip().lower()
+        if getans != "true" && getans != "false":
+            getans = "false"
         ansdb[nowkey][index] = {'message': checkpoint['message'],'ans': json.loads(getans.lower()), 'weight': checkpoint['weight']}
 
 

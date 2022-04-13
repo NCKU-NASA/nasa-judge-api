@@ -5,6 +5,8 @@ then
     exit 0
 fi
 
+#set -e
+
 context=$(sed "s/<wanip>/$1/g" exweb.html | sha256sum | sed "s/[^0-9a-zA-Z]//g")
 
 # testing service is up with curl
@@ -33,4 +35,7 @@ do
 done
 
 echo true
+
+#set -e
+
 exit 0

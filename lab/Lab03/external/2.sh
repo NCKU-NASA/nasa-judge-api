@@ -5,6 +5,7 @@ then
     exit 0
 fi
 
+#set -e
 
 if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 sudo systemctl is-enabled $3)" != "enabled" ]
 then
@@ -14,4 +15,7 @@ fi
 
 
 echo true
+
+#set +e
+
 exit 0

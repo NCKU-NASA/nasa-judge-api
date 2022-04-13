@@ -6,6 +6,8 @@ then
     exit 0
 fi
 
+#set -e
 
 echo true
 
+#set +e

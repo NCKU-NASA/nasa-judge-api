@@ -6,6 +6,8 @@ then
    exit 0
 fi
 
+#set -e
+
 sed -i 's/PasswordAuthentication=no/PasswordAuthentication=yes/g' ~/.ssh/config
 echo 'PubkeyAuthentication=no' >> ~/.ssh/config
 
@@ -46,3 +48,4 @@ fi
 
 echo true
 
+#set +e

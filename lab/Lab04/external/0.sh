@@ -5,6 +5,7 @@ then
     exit 0
 fi
 
+#set -e
 
 if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 lsblk | awk '($4 == "10G" && $6 == "disk") {count++} END {print count}')" -lt 2 ]
 then
@@ -13,4 +14,7 @@ then
 fi
 
 echo true
+
+#set +e
+
 exit 0

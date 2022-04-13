@@ -6,6 +6,8 @@ then
    exit 0
 fi
 
+#set -e
+
 # generate user config
 bash genuserconfig.sh
 
@@ -71,3 +73,4 @@ done
 
 echo true
 
+#set +e

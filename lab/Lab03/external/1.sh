@@ -5,6 +5,7 @@ then
     exit 0
 fi
 
+#set -e
 
 if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 sudo systemctl list-units | grep $3)" == "" ]
 then
@@ -14,5 +15,8 @@ fi
 
 
 echo true
+
+#set +e
+
 exit 0
 

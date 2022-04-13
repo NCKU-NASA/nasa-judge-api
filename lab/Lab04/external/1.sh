@@ -5,6 +5,8 @@ then
     exit 0
 fi
 
+#set -e
+
 if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 ls -l /dev/md0 | awk '{print substr($1,1,1) $4}')" != "bdisk" ]
 then
     echo false
@@ -13,4 +15,7 @@ fi
 
 
 echo true
+
+#set +e
+
 exit 0

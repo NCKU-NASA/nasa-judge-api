@@ -5,6 +5,8 @@ then
     exit 0
 fi
 
+#set -e
+
 ssh $(echo "$2" | awk '{print tolower($0)}')@$1 sudo gpasswd -d $3 sudo > /dev/null
 
 sleep 4;
@@ -16,4 +18,7 @@ then
 fi
 
 echo true
+
+#set +e
+
 exit 0

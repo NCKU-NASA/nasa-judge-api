@@ -6,6 +6,8 @@ then
     exit 0
 fi
 
+#set -e
+
 if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 ip a | grep inet | grep LAN | grep 192.168.3.254/24)" == "" ]
 then
     echo false
@@ -14,3 +16,4 @@ fi
 
 echo true
 
+#set +e

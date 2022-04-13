@@ -7,5 +7,8 @@
 #fi
 
 
+#set -e
+
 echo true
 
+#set +e

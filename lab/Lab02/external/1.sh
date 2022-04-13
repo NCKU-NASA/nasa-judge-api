@@ -5,6 +5,8 @@ then
     exit 0
 fi
 
+#set -e
+
 # frontend -> text
 if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 sudo docker exec -t frontend ping text -c 1 -W 1 | grep -P "64 bytes from .* \(.*\): icmp_seq=1")" == '' ]
 then
@@ -30,6 +32,8 @@ then
     exit 0
 fi
 
-
 echo true
+
+#set +e
+
 exit 0

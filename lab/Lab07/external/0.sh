@@ -6,6 +6,8 @@ then
     exit 0
 fi
 
+#set -e
+
 if [ "$(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 hostname)" != "switch" ]
 then
     echo false
@@ -20,3 +22,4 @@ fi
 
 echo true
 
+#set +e
