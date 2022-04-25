@@ -1,0 +1,46 @@
+{
+  "checkonhost": false,
+  "external": [
+    {
+      "message": "Hostname and ip are set correctly.",
+      "args": "<wanip> <studentId>",
+      "weight": 10
+    },
+    {
+      "message": "Check if unnecessary traffic is blocked.",
+      "args": "<wanip> <studentId>",
+      "weight": 20
+    },
+    {
+      "message": "Check if the connection can access the Internet normally.",
+      "args": "<wanip> <studentId>",
+      "weight": 20,
+      "check": {
+          "external": [1]
+      }
+    }
+  ],
+  "internal": [
+    {
+      "message": "Hostname and ip are set correctly.",
+      "args": "<wanip> <studentId>",
+      "weight": 10
+    },
+    {
+      "message": "Can access the Internet normally through gw.",
+      "args": "<wanip> <studentId>",
+      "weight": 20,
+      "check": {
+          "internal": [0]
+      }
+    },
+    {
+      "message": "Check whether the IP behind the NAT is an WAN IP.",
+      "args": "<wanip> <studentId>",
+      "weight": 20,
+      "check": {
+          "internal": [0]
+      }
+    }
+  ]
+}

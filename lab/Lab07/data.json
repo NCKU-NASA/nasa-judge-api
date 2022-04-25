@@ -7,12 +7,12 @@
       "weight": 25
     },
     {
-      "message": "There are four interfaces lan1, lan2, lan3, lan4",
+      "message": "There are two interfaces lan1, lan2",
       "args": "<wanip> <studentId>",
       "weight": 25
     },
     {
-      "message": "Bridge the four interfaces and set the bridge interface name to LAN",
+      "message": "Bridge the two interfaces and set the bridge interface name to LAN",
       "args": "<wanip> <studentId>",
       "weight": 25
     },
