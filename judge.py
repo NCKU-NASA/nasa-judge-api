@@ -44,9 +44,9 @@ def judging(nowkey, index, checkpoint):
                 if checkpoint['check'].__contains__(key):
                     for i in range(len(checkpoint['check'][key])):
                         if not ansdb[key][checkpoint['check'][key][i]]['ans']:
-                            checkjudge = False
+                            canjudge = False
                             break
-                    if not checkjudge:
+                    if not canjudge:
                         break
 
     if canjudge:
@@ -75,6 +75,8 @@ def judging(nowkey, index, checkpoint):
         os.system("echo >> judgeerrlog")
 
         ansdb[nowkey][index] = {'message': checkpoint['message'],'ans': json.loads(getans.lower()), 'weight': checkpoint['weight']}
+    else:
+        ansdb[nowkey][index] = {'message': checkpoint['message'],'ans': False, 'weight': checkpoint['weight']}
 
 
 os.system('bash onstartjudge.sh ' + str(checkonhost))
