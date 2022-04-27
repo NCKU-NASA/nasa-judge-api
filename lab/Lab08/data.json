@@ -39,7 +39,7 @@
       "args": "<wanip> <studentId>",
       "weight": 20,
       "check": {
-          "internal": [0]
+          "internal": [1]
       }
     }
   ]
