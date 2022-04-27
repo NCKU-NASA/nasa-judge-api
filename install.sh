@@ -117,7 +117,7 @@ done
 if [ ! -f /etc/wireguard/server.conf ]
 then
 	sudo bash /etc/wireguard/addwgserver.sh -n server -i 10.100.100.254/24 -p 7654
-	sed -i '3 aMTU = 1350' /etc/wireguard/server.conf
+	sed -i '3 aMTU = 1420' /etc/wireguard/server.conf
 	systemctl enable wg-quick@server.service
 	systemctl start wg-quick@server.service
 fi
@@ -127,7 +127,7 @@ then
 	sudo bash /etc/wireguard/addwgserver.sh -n testserver -i 10.100.200.254/24 -p 7777
 	sed -i '3 aPostUp = bash /etc/wireguard/testserverfirewall.sh up' /etc/wireguard/testserver.conf
 	sed -i '3 aPostDown = bash /etc/wireguard/testserverfirewall.sh down' /etc/wireguard/testserver.conf
-	sed -i '3 aMTU = 1350' /etc/wireguard/testserver.conf
+	sed -i '3 aMTU = 1420' /etc/wireguard/testserver.conf
 	systemctl enable wg-quick@testserver.service
 	systemctl start wg-quick@testserver.service
 fi
