@@ -34,11 +34,18 @@ then
     exit 0
 fi
 
-if [ "$(ssh $username@$1 ssh $username@192.168.3.100 ip a show eth0 2> >(tee -a judgeerrlog 1>&2) | tee -a judgelog | grep "inet 192\.168\.3\.100/24")" == "" ]
+if [ "$(ssh $username@$1 ssh $username@192.168.3.100 ip a show eth0 2> >(tee -a judgeerrlog 1>&2) | tee -a judgelog | grep "inet " | wc -l)" == "" ]
 then
     echo false
     exit 0
 fi
+
+if [ "$(ssh $username@$1 ssh $username@192.168.3.100 ip a show eth0 | grep "inet 192\.168\.3\.100/24")" == "" ]
+then
+    echo false
+    exit 0
+fi
+
 
 echo true
 
