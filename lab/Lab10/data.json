@@ -3,7 +3,7 @@
   "external": [
     {
       "message": "Nginx is used",
-      "args": "<wanip>",
+      "args": "<wanip> <studentId>",
       "weight": 10
     },
     {
