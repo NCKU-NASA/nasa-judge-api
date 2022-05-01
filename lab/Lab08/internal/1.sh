@@ -16,7 +16,7 @@ then
     exit 0
 fi
 
-traceroutedata="$(ssh $username@$1 ssh $username@192.168.3.100 traceroute -n -I 8.8.8.8 -w 0.1 2> >(tee -a judgeerrlog 1>&2) | tee -a judgelog)"
+traceroutedata="$(ssh $username@$1 ssh $username@192.168.3.100 sudo traceroute -n -I 8.8.8.8 -w 0.1 2> >(tee -a judgeerrlog 1>&2) | tee -a judgelog)"
 
 if [ "$(echo "$traceroutedata" | grep "1  192.168.3.254")" == "" ]
 then
