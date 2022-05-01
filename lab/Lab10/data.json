@@ -1,0 +1,50 @@
+{
+  "checkonhost": false,
+  "external": [
+    {
+      "message": "Nginx is used",
+      "args": "<wanip>",
+      "weight": 10
+    },
+    {
+      "message": "Return 401 if username or password is incorrect",
+      "args": "<wanip>",
+      "weight": 10,
+      "check": {
+        "external": [0]
+      }
+    },
+    {
+      "message": "Check if the application is allowed to register and login",
+      "args": "<wanip>",
+      "weight": 20,
+      "check": {
+        "external": [1]
+      }
+    },
+    {
+      "message": "Check if user can login and get his account information",
+      "args": "<wanip>",
+      "weight": 20,
+      "check": {
+        "external": [2]
+      }
+    },
+    {
+      "message": "Check if user can logout",
+      "args": "<wanip>",
+      "weight": 20,
+      "check": {
+        "external": [3]
+      }
+    },
+    {
+      "message": "Check if user can delete his own account",
+      "args": "<wanip>",
+      "weight": 20,
+      "check": {
+        "external": [4]
+      }
+    }
+  ]
+}
