@@ -20,7 +20,7 @@ try:
 except Exception as e:
     print(e, file=sys.stderr)
 if status != 401:
-    print('Status code 401 expected')
+    print('Status code 401 expected', file=sys.stderr)
     print('false')
 else:
     print('true')
