@@ -1,0 +1,89 @@
+{
+  "checkonhost": false,
+  "external": [
+    {
+      "message": "Hostname and ip are set correctly.",
+      "args": "<wanip> <studentId>",
+      "weight": 5
+    },
+    {
+      "message": "Check if unnecessary traffic is blocked.",
+      "args": "<wanip> <studentId>",
+      "weight": 5
+    },
+    {
+      "message": "Check if the connection can access the Internet normally.",
+      "args": "<wanip> <studentId>",
+      "weight": 5,
+      "check": {
+          "external": [1]
+      }
+    },
+    {
+      "message": "Check if the DNS record is correct.",
+      "args": "<wanip> <studentId>",
+      "weight": 10
+    },
+    {
+      "message": "Check whether the web page of srv1 can be browsed from the external network.",
+      "args": "<studentId>",
+      "weight": 10,
+      "check": {
+          "external": [3],
+          "internal": [0]
+      }
+    }
+  ],
+  "internal": [
+    {
+      "message": "Hostname and ip are set correctly(srv1).",
+      "args": "<wanip> <studentId>",
+      "weight": 5
+    },
+    {
+      "message": "Hostname and ip are set correctly(clt).",
+      "args": "<wanip> <studentId> <clt_ip>",
+      "weight": 10
+    },
+    {
+      "message": "Can access the Internet normally through gw.",
+      "args": "<wanip> <studentId> <clt_ip>",
+      "weight": 10,
+      "check": {
+          "internal": [1]
+      }
+    },
+    {
+      "message": "Check whether the IP behind the NAT is an WAN IP.",
+      "args": "<wanip> <studentId> <clt_ip>",
+      "weight": 10,
+      "check": {
+          "internal": [2]
+      }
+    },
+    {
+      "message": "Check if the DNS record is correct",
+      "args": "<wanip> <studentId> <clt_ip>",
+      "weight": 10,
+      "check": {
+          "internal": [1]
+      }
+    },
+    {
+      "message": "Check if the web page of srv1 can be browsed from the internal network.",
+      "args": "<wanip> <studentId> <clt_ip>",
+      "weight": 10,
+      "check": {
+          "internal": [0,4]
+      }
+    },
+    {
+      "message": "Check if you can find other domains under \"nasa\"",
+      "args": "<wanip> <studentId> <clt_ip>",
+      "weight": 10,
+      "check": {
+          "internal": [3]
+      }
+    }
+  ]
+}

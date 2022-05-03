@@ -10,18 +10,6 @@ fi
 
 username=$(echo "$2" | awk '{print tolower($0)}')
 
-
-ssh $username@$1 '
-if [ -f ~/.ssh/config ]
-then
-    cp ~/.ssh/config ~/.ssh/config.bak
-fi
-
-echo "StrictHostKeyChecking no" > ~/.ssh/config
-echo "UserKnownHostsFile=/dev/null" >> ~/.ssh/config
-echo "PasswordAuthentication=no" >> ~/.ssh/config
-echo "ConnectTimeout=1" >> ~/.ssh/config'
-
 if [ "$(ssh $username@$1 ssh $username@192.168.3.100 hostname 2> >(tee -a judgeerrlog 1>&2) | tee -a judgelog)" != "clt" ]
 then
     echo false

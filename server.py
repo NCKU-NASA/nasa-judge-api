@@ -84,7 +84,7 @@ def check():
         if labdata['checkonhost']:
             os.system('cd /tmp/judgescript; bash onclearjudge.sh; cd /tmp; rm -r /tmp/judgescript')
         else:
-            os.system('ssh root@' + nownode + ' "cd judgescript/; bash onclearjudge.sh ' + str(labdata['checkonhost']) + '; cd ~; rm -r judgescript"')
+            os.system('ssh root@' + nownode + ' "cd judgescript/; bash onclearjudge.sh ' + str(labdata['checkonhost']) + ' ' + data['wanip'] + ' ' + data['studentId'] + '; cd ~; rm -r judgescript"')
 
     if not labdata['checkonhost']:
         nodes.append(nownode)
