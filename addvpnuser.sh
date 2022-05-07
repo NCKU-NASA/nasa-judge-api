@@ -30,7 +30,7 @@ if [ "$(grep "# $1" /etc/wireguard/testserver.conf)" != "" ]
 then
     echo "User exist"
 else
-    bash /etc/wireguard/addwguser.sh -s /etc/wireguard/testserver.conf -u $1 -f nasajudge.chummydns.com -r $userip,10.100.200.254/32 -d client2 -a 10.100.200.$(echo $userip | sed 's/.*\.//g' | sed 's/\/.*//g') -ns 10.100.200.254
+    bash /etc/wireguard/addwguser.sh -s /etc/wireguard/testserver.conf -u $1 -f nasajudge.chummydns.com -r 10.31.31.0/24,10.100.0.0/16 -d client2 -a 10.100.200.$(echo $userip | sed 's/.*\.//g' | sed 's/\/.*//g') -ns 10.100.200.254
     sed -i '4 aMTU = 1420' /etc/wireguard/client2/$1.conf
 fi
 
