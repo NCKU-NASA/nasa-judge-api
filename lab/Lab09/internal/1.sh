@@ -10,6 +10,13 @@ fi
 
 username=$(echo "$2" | awk '{print tolower($0)}')
 
+if [ "$(ipcalc $3 | grep Network | awk '{print $2}')" != "192.168.3.0/24" ]
+then
+    echo "invalid clt ip address" >> judgelog
+    echo false
+    exit 0
+fi
+
 if [ "$(ssh $username@$1 ssh $username@$3 hostname 2> >(tee -a judgeerrlog 1>&2) | tee -a judgelog)" != "clt" ]
 then
     echo false
