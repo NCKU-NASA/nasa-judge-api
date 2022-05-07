@@ -12,7 +12,7 @@ ip = sys.argv[1]
 base_url = f'http://{ip}'
 
 keys = utils.getAll(base_url)
-for pair in open('key_value_pair.lst', 'r'):
+for pair in open('external/key_value_pair.lst', 'r'):
   try:
     key, value = pair.strip().split(':')
     if key in keys:

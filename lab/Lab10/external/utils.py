@@ -16,7 +16,7 @@ def getAll(base_url):
     return None
 
 def get(base_url, key):
-  res = requests.get(f'{base_url}/key/{requests.utils.quote(key)}', timeout=timeout)
+  res = requests.get(f'{base_url}/key/{requests.utils.quote(key, safe="")}', timeout=timeout)
   if res.status_code == 404:
     return {}
   elif res.status_code == 200:
@@ -26,9 +26,9 @@ def get(base_url, key):
     raise Exception(f'Unexpected status code: {res.status_code}, response: {res.text}')
 
 def update(base_url, key, value):
-  res = requests.put(f'{base_url}/key/{requests.utils.quote(key)}', json={'key': key, 'value': value}, timeout=timeout)
+  res = requests.put(f'{base_url}/key/{requests.utils.quote(key, safe="")}', json={'key': key, 'value': value}, timeout=timeout)
   return res.status_code
 
 def delete(base_url, key):
-  res = requests.delete(f'{base_url}/key/{requests.utils.quote(key)}', timeout=timeout)
+  res = requests.delete(f'{base_url}/key/{requests.utils.quote(key, safe="")}', timeout=timeout)
   return res.status_code

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 '''
-This script checks if key can be successfully deleted
+This script deletes all keys
 '''
 import requests, sys, random, string
 import utils
