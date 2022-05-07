@@ -36,6 +36,7 @@ fi
 
 if [ "$(ssh $username@$1 ssh $username@$3 ss -ulnp | grep $3:53 2> >(tee -a judgeerrlog 1>&2) | tee -a judgelog)" != "" ]
 then
+    echo "udp 53 port??? I just said don't set up dns server on clt." >> judgelog
     echo false
     exit 0
 fi
