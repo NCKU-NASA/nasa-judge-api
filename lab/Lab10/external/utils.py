@@ -2,37 +2,33 @@
 import requests, sys, json
 timeout = 1
 
-def login(sess, base_url, credential: dict):
-    required = ['username', 'password']
-    for r in required:
-        if r not in credential:
-            return None
-    res = sess.post(f'{base_url}/user/login', json=credential, timeout=timeout)
-    return res.status_code
+def create(base_url, key, value):
+  res = requests.post(f'{base_url}/key', json={'key': key, 'value': value}, timeout=timeout)
+  return res.status_code
 
-def register(base_url, credential: dict):
-    required = ['username', 'password']
-    for r in required:
-        if r not in credential:
-            return None
-    res = requests.post(f'{base_url}/user/register', json=credential, timeout=timeout)
-    return res.status_code
+def getAll(base_url):
+  res = requests.get(f'{base_url}/key', timeout=timeout)
+  try:
+    keys = json.loads(res.text)
+    return keys
+  except:
+    print('Error parsing body', file=sys.stderr)
+    return None
 
-def logout(sess, base_url):
-    res = sess.post(f'{base_url}/user/logout', timeout=timeout)
-    return res.status_code
+def get(base_url, key):
+  res = requests.get(f'{base_url}/key/{requests.utils.quote(key, safe="")}', timeout=timeout)
+  if res.status_code == 404:
+    return {}
+  elif res.status_code == 200:
+    key = json.loads(res.text)
+    return key
+  else:
+    raise Exception(f'Unexpected status code: {res.status_code}, response: {res.text}')
 
-def get_user(sess, base_url):
-    res = sess.get(f'{base_url}/user', timeout=timeout)
-    if res.status_code != 200:
-        return None
-    try:
-        res_body = json.loads(res.text)
-        return res_body
-    except:
-        print('Error parsing user body', file=sys.stderr)
-        return None
+def update(base_url, key, value):
+  res = requests.put(f'{base_url}/key/{requests.utils.quote(key, safe="")}', json={'key': key, 'value': value}, timeout=timeout)
+  return res.status_code
 
-def delete_user(sess, base_url):
-    res = sess.delete(f'{base_url}/user', timeout=timeout)
-    return res.status_code
+def delete(base_url, key):
+  res = requests.delete(f'{base_url}/key/{requests.utils.quote(key, safe="")}', timeout=timeout)
+  return res.status_code
