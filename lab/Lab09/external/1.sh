@@ -45,23 +45,6 @@ fi
 
 kill -9 $(ps aux | grep "nc -l -p" | awk '{print $2}' | head -n 1)
 
-if ! $dead
-then
-    port=80
-
-    ssh $(echo "$2" | awk '{print tolower($0)}')@$1 "echo \"why you need to open tcp 80 port?\" | sudo nc -l -p $port" 1>/dev/null &
-
-    sleep 3
-
-    if [ "$(echo 1 | nc $1 $port -q 1 -w 3 | tee -a judgelog)" != "" ]
-    then
-        echo false
-        dead=true
-    fi
-fi
-
-kill -9 $(ps aux | grep "nc -l -p" | awk '{print $2}' | head -n 1)
-
 for a in $(ssh $(echo "$2" | awk '{print tolower($0)}')@$1 ps aux | grep "nc -l -p" | awk '{print $2}')
 do
     ssh $(echo "$2" | awk '{print tolower($0)}')@$1 "sudo kill -9 $a"
