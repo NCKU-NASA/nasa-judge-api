@@ -7,15 +7,15 @@
       "weight": 10
     },
     {
-      "message": "Return 401 if username or password is incorrect",
+      "message": "Check 'POST /' and 'GET /key/{key}' api",
       "args": "<wanip>",
-      "weight": 10,
+      "weight": 20,
       "check": {
         "external": [0]
       }
     },
     {
-      "message": "Check if the application is allowed to register and login",
+      "message": "Check if created keys can be listed through 'GET /key' api",
       "args": "<wanip>",
       "weight": 20,
       "check": {
@@ -23,7 +23,7 @@
       }
     },
     {
-      "message": "Check if user can login and get his account information",
+      "message": "Check 'DELETE /key/{key}' api",
       "args": "<wanip>",
       "weight": 20,
       "check": {
@@ -31,15 +31,15 @@
       }
     },
     {
-      "message": "Check if user can logout",
+      "message": "Check if 'GET /key/{key} returns the correct status when the specified key cannot be found'",
       "args": "<wanip>",
-      "weight": 20,
+      "weight": 10,
       "check": {
         "external": [3]
       }
     },
     {
-      "message": "Check if user can delete his own account",
+      "message": "Check 'PUT /key/{key}' api and its return status",
       "args": "<wanip>",
       "weight": 20,
       "check": {
