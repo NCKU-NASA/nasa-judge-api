@@ -79,8 +79,10 @@ def judging(nowkey, index, checkpoint):
         ansdb[nowkey][index] = {'message': checkpoint['message'],'ans': False, 'weight': checkpoint['weight']}
 
 
-os.system('bash onstartjudge.sh ' + str(checkonhost))
-os.system('bash onclearjudge.sh ' + str(checkonhost))
+print(getdata['labId'] + ': bash onclearjudge.sh ' + str(checkonhost) + ' ' + getdata['wanip'] + ' ' + getdata['studentId'], file=sys.stderr)
+os.system('bash onclearjudge.sh ' + str(checkonhost) + ' ' + getdata['wanip'] + ' ' + getdata['studentId'])
+print(getdata['labId'] + ': bash onstartjudge.sh ' + str(checkonhost) + ' ' + getdata['wanip'] + ' ' + getdata['studentId'], file=sys.stderr)
+os.system('bash onstartjudge.sh ' + str(checkonhost) + ' ' + getdata['wanip'] + ' ' + getdata['studentId'])
 try:
     for a in getdata['data']:
         if a['type'] == 'file':
@@ -99,14 +101,16 @@ try:
                 ans[key].append(ansdb[key][i])
 
 except Exception as ex:
-    os.system('bash onclearjudge.sh ' + str(checkonhost))
+    print(getdata['labId'] + ': bash onclearjudge.sh ' + str(checkonhost) + ' ' + getdata['wanip'] + ' ' + getdata['studentId'], file=sys.stderr)
+    os.system('bash onclearjudge.sh ' + str(checkonhost) + ' ' + getdata['wanip'] + ' ' + getdata['studentId'])
     print(ex, file=sys.stderr)
     print('false')
     exit()
 
 #print(data)
 
-os.system('bash onclearjudge.sh ' + str(checkonhost))
+print(getdata['labId'] + ': bash onclearjudge.sh ' + str(checkonhost) + ' ' + getdata['wanip'] + ' ' + getdata['studentId'], file=sys.stderr)
+os.system('bash onclearjudge.sh ' + str(checkonhost) + ' ' + getdata['wanip'] + ' ' + getdata['studentId'])
 
 print(json.dumps(ans))
 #os.system('pwd')
