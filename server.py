@@ -32,7 +32,7 @@ def check():
     outlog=""
     errlog=""
     try:
-        data['wanip'] = os.popen('grep -B 1 -A 3 "# ' + data['studentId'] + '" /etc/wireguard/server.conf | grep -oP \'(?<=AllowedIPs\s=\s)\d+(\.\d+){3}\' | tail -n 1').read().strip()
+        data['wanip'] = os.popen('grep -B 1 -A 3 -i \'# ' + data['studentId'] + '\' /etc/wireguard/server.conf | grep -oP \'(?<=AllowedIPs\s=\s)\d+(\.\d+){3}\' | tail -n 1').read().strip()
         if labdata['checkonhost']:
             os.system('rm -r /tmp/judgescript')
             os.system('cp -r lab/' + data['labId'] + ' /tmp/judgescript')
@@ -98,8 +98,20 @@ def alive():
 def serverlist():
     return json.dumps(nodes)
 
+@app.route('/studentidtoip',methods=['POST'])
+def studentidtoip():
+    data = json.loads(request.get_data())
+    if data.__contains__('studentId') and data['studentId'] != '':
+        return os.popen('grep -B 1 -A 3 -i \'# ' + data['studentId'] + '\' /etc/wireguard/server.conf | grep -oP \'(?<=AllowedIPs\s=\s)\d+(\.\d+){3}\' | tail -n 1').read().strip()
+    elif data.__contains__('ip') and data['ip'] != '':
+        return os.popen('grep -B 1 -i \'' + data['ip'] + '\' /etc/wireguard/server.conf | head -n 1 | sed \'s/# //g\'').read().strip()
+    else:
+        return "bad arg..."
+
+
+@app.route('/getdbscore',methods=['GET'])
 @app.route('/getdbscore/<path:path>',methods=['GET'])
-def getdbscorepath(path):
+def getdbscore(path=''):
     showresult = False
     if path == 'result':
         showresult = True
@@ -126,10 +138,6 @@ def getdbscorepath(path):
             if showresult:
                 allscore[a[0]][a[1]]['result'] = json.loads(a[3])
     return json.dumps(allscore)
-
-@app.route('/getdbscore',methods=['GET'])
-def getdbscore():
-    return getdbscorepath('')
 
 @app.errorhandler(404)
 def page_not_found(e):

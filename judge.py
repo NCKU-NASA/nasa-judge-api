@@ -25,8 +25,8 @@ ansdb={'external':{},'internal':{}}
 keys=list(ans.keys())
 
 def replaceargs(allargs, argname, argvalue):
-    argvalue = re.sub(r'[^a-zA-Z0-9.\-_:]*', '', argvalue)
-    return allargs.replace('<' + argname + '>', argvalue)
+    argvalue = re.sub(r'[^a-zA-Z0-9.\-/+_:=]*', '', argvalue)
+    return allargs.replace('<' + argname + '>', "'" + argvalue + "'")
 
 def judging(nowkey, index, checkpoint):
     canjudge = True
