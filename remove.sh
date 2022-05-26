@@ -7,7 +7,7 @@ sudo rm /etc/systemd/system/nasajudgeapi.service
 
 sudo umount /etc/nasajudgeapi/files
 
-for filename in addvpnuser.sh db.conf files lab node.conf __pycache__ requirements.txt server.py server.sh setupnode.sh testcheck.py testlab.json venv
+for filename in addvpnuser.sh db.conf files lab node.conf __pycache__ requirements.txt server.py server.sh setupnode.sh testcheck.py testlab.json .gitignore venv
 do
 	sudo rm -r /etc/nasajudgeapi/$filename
 done
