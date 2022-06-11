@@ -33,6 +33,9 @@ def check():
     errlog=""
     try:
         data['wanip'] = os.popen('grep -B 1 -A 3 -i \'# ' + data['studentId'] + '\' /etc/wireguard/server.conf | grep -oP \'(?<=AllowedIPs\s=\s)\d+(\.\d+){3}\' | tail -n 1').read().strip()
+        if 'final' in labdata and labdata['final']:
+            data['wanip'] = os.popen('grep -i \'' + data['studentId'] + '\' finaluserlist.conf | awk \'{print $2}\'').read().strip()
+
         if labdata['checkonhost']:
             os.system('rm -r /tmp/judgescript')
             os.system('cp -r lab/' + data['labId'] + ' /tmp/judgescript')

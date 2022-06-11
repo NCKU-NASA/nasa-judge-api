@@ -174,7 +174,7 @@ do
 	sudo cp -r $filename /etc/nasajudgeapi/
 done
 
-for filename in node.conf db.conf
+for filename in node.conf db.conf finaluserlist.conf
 do
 	if [ ! -f /etc/nasajudgeapi/$filename ]
 	then
