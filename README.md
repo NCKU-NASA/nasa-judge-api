@@ -21,7 +21,7 @@ cd nasa-judge-api
 4. run ``install.sh``
 
 ```bash
-sh install.sh
+bash install.sh
 ```
 
 5. get judgeapi wireguard vpn from nasa-judge-backend and put in `/etc/wireguard/judgeapi.conf`
