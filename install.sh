@@ -169,7 +169,7 @@ sudo mkdir /etc/nasajudgeapi 2> /dev/null
 sudo mkdir /etc/nasajudgeapi/files 2> /dev/null
 set -e
 
-for filename in lab requirements.txt server.py server.sh judge.py testcheck.py .gitignore setupnode.sh addvpnuser.sh
+for filename in lab requirements.txt server.py server.sh judge.py testcheck.py .gitignore setupnode.sh addvpnuser.sh onclearjudge.sh onstartjudge.sh
 do
 	sudo cp -r $filename /etc/nasajudgeapi/
 done
