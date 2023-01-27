@@ -1,0 +1,15 @@
+ListenHost: "localhost"
+port: 80
+db:
+  dbhost: 127.0.0.1
+  dbport: 3306
+  dbname: nasa
+  dbusername: nasa
+  dbpassword: password
+wireguard:
+  judgelanport: 7654
+  judgelanips: 10.100.100.254/24
+  judgelanMTU: 1420
+  testlanport: 7777
+  testlanips: 10.100.200.254/24
+  testlanMTU: 1420

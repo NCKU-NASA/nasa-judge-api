@@ -1,0 +1,27 @@
+- name: Start judge VPN
+  systemd: 
+    name: wg-quick@judgelan
+    state: started
+    enabled: true
+  become: true
+
+- name: Start testing VPN
+  systemd: 
+    name: wg-quick@testlan
+    state: started
+    enabled: true
+  become: true
+
+- name: Restart named
+  systemd: 
+    name: named
+    state: restarted
+  become: true
+
+- name: Start judge
+  systemd: 
+    name: nasajudgeapi
+    enabled: true
+    daemon_reload: true
+    state: started
+  become: true

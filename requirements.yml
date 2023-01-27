@@ -1,0 +1,6 @@
+collections:
+  - name: ansible.utils
+
+roles:
+  - src: https://github.com/Jimmy01240397/VpnGenerator
+  - name: andrewrothstein.yq

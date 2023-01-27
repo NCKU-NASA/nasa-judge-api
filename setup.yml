@@ -1,0 +1,20 @@
+#!/usr/bin/env ansible-playbook
+- hosts: localhost
+  vars_files:
+    - defaults/main.yml
+
+  roles:
+    - python3
+    - curl
+    - wget
+    - wireguard
+    - jq
+    - bind9
+    - andrewrothstein.yq
+
+  tasks:
+    - name: include main task
+      include: tasks/main.yml
+  
+  handlers:
+    - include: handlers/main.yml

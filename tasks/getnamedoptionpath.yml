@@ -1,0 +1,15 @@
+- name: "Check named.conf.options exists"
+  stat:
+    path: "{{ nameddir }}/named.conf.options"
+  register: result
+
+- name: "Get named option file path"
+  set_fact:
+    namedoptionpath: "{{ nameddir }}/named.conf.options"
+  when: result.stat.exists
+
+- name: "Get named option file path"
+  set_fact:
+    namedoptionpath: "{{ nameddir }}/named.conf"
+  when: not result.stat.exists
+

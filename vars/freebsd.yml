@@ -1,0 +1,4 @@
+etc: /usr/local/etc
+nasajudgeapidir: /usr/local/etc/nasajudgeapi
+wireguarddir: /usr/local/etc/wireguard
+nameddir: /usr/local/etc/namedb

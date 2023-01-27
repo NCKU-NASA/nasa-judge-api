@@ -1,0 +1,17 @@
+#!/bin/bash
+
+workdir="{{ nasajudgeapidir }}"
+
+cd $workdir
+
+. ./venv/bin/activate
+
+#python server.py
+
+if $(yq e '.enablessl' config.yaml)
+then
+    gunicorn --bind $(yq e '.ListenHost' config.yaml):$(yq e '.port' config.yaml) main:app -k gevent --worker-connections 80 --timeout 300
+else
+    gunicorn --certfile="$(yq e '.certificate' config.yaml)" --keyfile="$(yq e '.privatekey' config.yaml)" --bind $(yq e '.ListenHost' config.yaml):$(yq e '.port' config.yaml) main:app -k gevent --worker-connections 80 --timeout 300
+fi
+#gunicorn --certfile=server.crt --keyfile=server.key --bind [::]:443 server:app

@@ -1,0 +1,4 @@
+- name: "install {{ role_name }}"
+  apt:
+    name: 
+      - "{{ role_name }}"

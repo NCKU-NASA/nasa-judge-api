@@ -1,0 +1,114 @@
+- name: Stop judge
+  systemd: 
+    name: nasajudgeapi
+    state: stoped
+  become: true
+  ignore_errors: true
+
+- name: Init os var
+  include_vars: "vars/{{ ansible_system | lower }}.yml"
+
+- name: Get named option path
+  include_tasks: "getnamedoptionpath.yml"
+
+- name: Make judge VPN client directory
+  file: "{{ wireguarddir }}/judgelanclient"
+    state: directory
+  become: true
+
+- name: Make testing VPN client directory
+  file: "{{ wireguarddir }}/testlanclient"
+    state: directory
+  become: true
+
+- name: Generate judge VPN server
+  include_role:
+    name: VpnGenerator/roles/addwgserver
+  vars:
+    servername: judgelan
+    addresses: "{{ wireguard.judgelanips }}"
+    serverport: "{{ wireguard.judgelanport }}"
+    moreconfig: "MTU = {{ wireguard.judgelanMTU }}"
+  notify: Start judge VPN
+
+- name: Generate testing VPN server
+  include_role:
+    name: VpnGenerator/roles/addwgserver
+  vars:
+    servername: testlan
+    addresses: "{{ wireguard.testlanips }}"
+    serverport: "{{ wireguard.testlanport }}"
+    moreconfig: "MTU = {{ wireguard.testlanMTU }}"
+  notify: Start testing VPN
+
+- name: Set bind9 options
+  lineinfile:
+    path: "{{ namedoptionpath }}"
+    insertafter: "^\\s*directory.*;\\s*$"
+    line: "{{ item }}"
+  become: true
+  with_items:
+    - "    allow-new-zones yes;"
+    - "    allow-query { any; };"
+    - "    max-ncache-ttl 0;"
+    - "    max-cache-ttl 0;"
+
+- name: Set bind9 dnssec-validation
+  lineinfile:
+    path: "{{ namedoptionpath }}"
+    insertafter: "^\\s*directory.*;\\s*$"
+    regexp: "^\\s*dnssec-validation\\s*.*;\\s*$"
+    line: "    dnssec-validation no;"
+  become: true
+  notify: Restart named
+
+- name: Add nasa user
+  user:
+    name: nasa
+    generate_ssh_key: yes
+  become: true
+
+- name: Copy judge api directory
+  copy:
+    src: "src/"
+    dest: "{{ nasajudgeapidir }}/"
+    owner: nasa
+    group: nasa
+  become: true
+
+- name: Check config files exist
+  stat:
+    path: "{{ nasajudgeapidir }}/{{ item }}"
+  become: true
+  register: config
+  with_items:
+    - config.yaml
+
+- name: Copy config files
+  template:
+    src: "templates/config/{{ item.item }}"
+    dest: "{{ nasajudgeapidir }}/{{ item.item }}"
+    owner: nasa
+    group: nasa
+  become: true
+  when: not item.stat.exists
+  with_items: "{{ config.results }}"
+
+- name: Copy executable file
+  template:
+    src: "templates/bin/nasajudgeapi"
+    dest: "/usr/local/bin/nasajudgeapi"
+    mode: 0755
+  become: true
+
+- name: Copy systemd
+  template:
+    src: "templates/systemd/nasajudgeapi.service"
+    dest: "{{ etc }}/systemd/system/nasajudgeapi.service"
+  become: true
+
+- name: Run venv init
+  script: "script/initvenv.sh {{ nasajudgeapidir }}"
+  become: true
+  become_user: nasa
+  notify: Start judge

@@ -1,0 +1,15 @@
+enablessl: false
+ListenHost: "{{ ListenHost }}"
+port: {{ port }}
+certificate: ""
+privatekey: ""
+db:
+  host: "{{ db.dbhost }}"
+  port: {{ db.dbport }}
+  user: "{{ db.dbusername }}"
+  password: "{{ db.dbpassword }}"
+  db: "{{ db.dbname }}"
+  charset: "utf8"
+
+workers: []
+
