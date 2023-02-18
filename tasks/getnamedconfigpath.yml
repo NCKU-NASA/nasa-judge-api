@@ -1,0 +1,14 @@
+- name: "Check named.conf.local exists"
+  stat:
+    path: "{{ nameddir }}/named.conf.local"
+  register: result
+
+- name: "Set local path (named.conf.local)"
+  set_fact:
+    namedlocalpath: "{{ nameddir }}/named.conf.local"
+  when: result.stat.exists
+
+- name: "Set local path (named.conf)"
+  set_fact:
+    namedlocalpath: "{{ nameddir }}/named.conf"
+  when: not result.stat.exists

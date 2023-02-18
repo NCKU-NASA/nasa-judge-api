@@ -6,38 +6,38 @@ nameserver:
   - host: "{%raw%}dns.{{ username }}{%endraw%}"
     zone: nasa
     type: A
-    netmask: "10.100.100.0/24"
+    netmask: "10.187.100.0/24"
     ipindex: "{%raw%}{{ ipindex }}{%endraw%}"
-    NSIP: 10.31.31.254
+    NSIP: 10.187.10.254
   - host: "{%raw%}{{ username }}{%endraw%}"
     zone: nasa
     type: NS
     data: "{%raw%}dns.{{ username }}.nasa.{%endraw%}"
-    NSIP: 10.31.31.254
+    NSIP: 10.187.10.254
   - host: "{%raw%}dns.{{ username }}{%endraw%}"
     zone: final.nasa
     type: A
-    netmask: "10.100.125.0/24"
+    netmask: "10.187.11.0/24"
     ipindex: "{%raw%}{{ ipindex }}{%endraw%}"
-    NSIP: 10.31.31.254
+    NSIP: 10.187.10.254
   - host: "{%raw%}{{ username }}{%endraw%}"
     zone: final.nasa
     type: NS
     data: "{%raw%}dns.{{ username }}.nasa.{%endraw%}"
-    NSIP: 10.31.31.254
+    NSIP: 10.187.10.254
 wireguard:
   host: localhost
   tunnels:
   - name: judgelan
-    ips: 10.100.100.254/24
+    ips: 10.187.100.254/24
     server:
       port: 7654
       moreconfig: "MTU = 1420"
     client:
       configname: judge
       dir: judgelanclient
-      fqdn: 127.0.0.1
-      DNS: 10.100.100.254
+      fqdn: nasa.chummydns.com
+      DNS: 10.187.100.254
       AllowedIPs: "0.0.0.0/0"
       moreconfig: 'PostUp = iptables -t mangle -A FORWARD -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
 
@@ -55,14 +55,14 @@ wireguard:
 
         MTU = 1420'
   - name: testlan
-    ips: 10.100.200.254/24
+    ips: 10.187.200.254/24
     server:
       port: 7777
       moreconfig: "MTU = 1420"
     client:
       configname: test
       dir: testlanclient
-      fqdn: 127.0.0.1
-      DNS: 10.100.200.254
-      AllowedIPs: "10.31.31.0/24,10.100.0.0/16"
+      fqdn: nasa.chummydns.com
+      DNS: 10.187.200.254
+      AllowedIPs: "10.187.0.0/16"
       moreconfig: "MTU = 1420"

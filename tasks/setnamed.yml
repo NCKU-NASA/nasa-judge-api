@@ -15,3 +15,9 @@
       regexp: "^((?!(.|\r|\n)*).)*$"
     - option: "    dnssec-validation no;"
       regexp: "^\\s*dnssec-validation\\s*.*;\\s*$"
+
+- name: Set rndc
+  blockinfile:
+    path: "{{ namedlocalpath }}"
+    block: "{{ lookup('template', 'templates/config/named.rndc.conf') }}"
+    marker: "// {mark} rndc"

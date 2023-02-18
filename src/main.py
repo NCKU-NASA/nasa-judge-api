@@ -1,4 +1,5 @@
 import os
+import sys
 import io
 import time
 import json
@@ -16,8 +17,8 @@ import zipfile
 import usersetting
 
 #import charts
-from paramiko import SSHClient, SFTPClient
-from flask import Flask,request,redirect,Response,make_response,jsonify,render_template,session,send_file
+from paramiko import SSHClient, SFTPClient, AutoAddPolicy
+from flask import Flask,request,redirect,Response,make_response,jsonify,render_template,session,send_file,send_from_directory
 
 app = Flask(__name__)
 
@@ -78,6 +79,8 @@ def judge():
 
     try:
         try:
+            subprocess.run(f'ansible-galaxy collection install -r judge/labs/{data["labId"]}/requirements.yml', shell=True)
+            subprocess.run(f'ansible-galaxy role install -r judge/labs/{data["labId"]}/requirements.ym', shell=True)
             process = subprocess.run(f"ansible-playbook judge/setup.yml -e '{json.dumps(data)}'", shell=True, timeout=labdata['timeout'])
             if process.returncode < 0 or process.returncode == 143 or process.returncode == 137:
                 raise Exception('bad return code')
@@ -187,30 +190,26 @@ def userconfig():
     if stoping:
         return ""
     data = request.get_json()
-
     zipname = str(uuid.uuid4())
 
-    with zipfile.ZipFile(f'/tmp/{zipname}.zip', 'w') as myzip:
+    sendfile = io.BytesIO()
+    with zipfile.ZipFile(sendfile, 'w') as myzip:
         with SSHClient() as ssh:
             ssh.load_system_host_keys()
+            ssh.set_missing_host_key_policy(AutoAddPolicy())
             ssh.connect(hostname=config['wireguard']['host'])
             with SFTPClient.from_transport(ssh.get_transport()) as sftp:
                 for tunnel in config["wireguard"]["tunnels"]:
-                    with scp.file(f'/etc/wireguard/{tunnel["client"]["dir"]}/{data[username]}.conf','r') as f:
+                    with sftp.file(f'/etc/wireguard/{tunnel["client"]["dir"]}/{data["username"]}.conf','r') as f:
                         myzip.writestr(f'{tunnel["client"]["configname"]}.conf', f.read())        
 
-    myzip.writestr('authorized_keys', '\n'.join(config['workerspubkeys']))
+        myzip.writestr('authorized_keys', '\n'.join(config['workerspubkeys']))
 
-    for nowconfigfile in usersetting.userconfig(data):
-        with nowconfigfile['file'] as f:
-            myzip.writestr(os.path.basename(nowconfigfile['filename']), f.read())
-
-    sendfile = io.BytesIO()
-    with open(f'/tmp/{zipname}.zip', 'rb') as f:
-        sendfile.write(f.read())
+        for nowconfigfile in usersetting.userconfig(data):
+            with nowconfigfile['file'] as f:
+                myzip.writestr(os.path.basename(nowconfigfile['filename']), f.read())
     sendfile.seek(0)
-    os.remove(f'/tmp/{zipname}.zip')
-    return send_file(sendfile, mimetype='application/zip', attachment_filename='userconfig.zip')
+    return Response(sendfile.getvalue(), mimetype='application/zip', headers={'Content-Disposition': 'attachment;filename=userconfig.zip'})
 
 @app.route('/download/<string:labId>/description',methods=['GET'])
 def description(labId):
@@ -227,10 +226,13 @@ def onbuilduser():
     adduserlock.acquire()
     try:
         data = request.get_json()
-        process = subprocess.run(f"ansible-playbook builduser/setup.yml -e '{json.dumps(data)}'", shell=True)
+        subprocess.run(f"ansible-galaxy collection install -r builduser/requirements.yml -f", shell=True)
+        subprocess.run(f"ansible-galaxy role install -r builduser/requirements.yml -f", shell=True)
+        subprocess.run(f"ansible-playbook builduser/setup.yml -e '{json.dumps(data)}'", shell=True)
         usersetting.builduser(data)
     finally:
         adduserlock.release()
+    return "true"
 
 @app.route('/getresult',methods=['POST'])
 def getresult():
