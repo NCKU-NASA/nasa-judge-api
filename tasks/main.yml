@@ -1,7 +1,7 @@
 - name: Stop judge
   systemd: 
     name: nasajudgeapi
-    state: stoped
+    state: stopped
   become: true
   ignore_errors: true
 
@@ -19,16 +19,20 @@
   import_tasks: setvpn.yml
   delegate_to: "{{ wireguard.host }}"
 
-- debug:
-    msg: "VPN complate"
+- assert:
+    that: true
+    quiet: true
+  changed_when: true
   notify: Start wireguard VPN
 
 - name: Set bind9 options
   import_tasks: setnamed.yml
   delegate_to: "{{ nameserver.host }}"
 
-- debug:
-    msg: "named complate"
+- assert:
+    that: true
+    quiet: true
+  changed_when: true
   notify: Restart named
 
 - name: Add nasa user

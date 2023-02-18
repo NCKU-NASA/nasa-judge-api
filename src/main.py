@@ -2,6 +2,7 @@ import os
 import io
 import time
 import json
+import yaml
 import ipaddress
 import re
 import sys
@@ -111,7 +112,7 @@ def canjudge():
         return json.dumps(False)
     data = json.loads(request.get_data())
     lock.acquire()
-    result = not (data['username'] in judgingusers):
+    result = not (data['username'] in judgingusers)
     lock.release()
     return json.dumps(result)
 
@@ -127,7 +128,7 @@ def getLabs():
 
     return json.dumps(result)
 
-@app.route('/getLab/<str:labId>',methods=['GET'])
+@app.route('/getLab/<string:labId>',methods=['GET'])
 def getLab(path):
     if stoping:
         return json.dumps(None)
@@ -175,7 +176,7 @@ def getalluserdata():
     r = session.get(f"{config['judegbackendhost']}/user/alluserdata")
     return r.test
 
-@app.route('/download/<str:labId>/<path:path>',methods=['GET'])
+@app.route('/download/<string:labId>/<path:path>',methods=['GET'])
 def download(labId, path):
     if stoping:
         return ""
@@ -194,7 +195,7 @@ def userconfig():
             ssh.load_system_host_keys()
             ssh.connect(hostname=config['wireguard']['host'])
             with SFTPClient.from_transport(ssh.get_transport()) as sftp:
-                for tunnel in config["wireguard"]["tunnels"]
+                for tunnel in config["wireguard"]["tunnels"]:
                     with scp.file(f'/etc/wireguard/{tunnel["client"]["dir"]}/{data[username]}.conf','r') as f:
                         myzip.writestr(f'{tunnel["client"]["configname"]}.conf', f.read())        
 
@@ -211,7 +212,7 @@ def userconfig():
     os.remove(f'/tmp/{zipname}.zip')
     return send_file(sendfile, mimetype='application/zip', attachment_filename='userconfig.zip')
 
-@app.route('/download/<str:labId>/description',methods=['GET'])
+@app.route('/download/<string:labId>/description',methods=['GET'])
 def description(labId):
     if stoping:
         return ""
