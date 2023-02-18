@@ -4,6 +4,8 @@ set -e
 
 dirpath=$(dirname "$0")
 
+ansible-galaxy collection install -r $dirpath/requirements.yml -f
+ansible-galaxy role install -r $dirpath/requirements.yml -f
 ansible-playbook $dirpath/setup.yml
 
 echo ""
