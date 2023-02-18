@@ -1,0 +1,109 @@
+- name: Set lab vars
+  include_vars: "labs/{{ labId }}/config.yaml"
+
+- name: Get wanip
+  set_fact:
+    wanip: "{{ network | nthhost(ipindex | int) }}"
+
+- name: Backup resolv.conf
+  copy: 
+    src: "/etc/resolv.conf"
+    dest: "/tmp/resolv.conf.bak"
+    remote_src: true
+  become: true
+
+- name: Main
+  block:
+    - name: Make .ssh
+      file: 
+        path: "~/.ssh"
+        state: directory
+      when: not checkonhost
+
+    - name: Set ssh config
+      template:
+        src: "templates/ssh.config"
+        dest: "~/.ssh/config"
+      when: not checkonhost
+
+    - name: Install package
+      include_tasks: installpackage.yml
+      loop: "{{ package }}"
+      loop_control:
+        loop_var: nowpackage
+
+    - name: Restore resolv.conf
+      copy: 
+        src: "/tmp/resolv.conf.bak"
+        dest: "/etc/resolv.conf"
+        remote_src: true
+      become: true
+
+    - name: Send script to worker
+      copy:
+        src: "labs/{{ labId }}/"
+        dest: "/tmp/{{ taskId }}/"
+
+    - name: Make workspace
+      file: 
+        path: "/tmp/{{ taskId }}/workspace"
+        state: directory
+
+    - name: Set global vars
+      include_tasks: "setglobalvars.yml"
+      loop: "{{ data }}"
+      loop_control:
+        loop_var: nowdata
+
+    - name: Remove temp dir
+      file: 
+        path: "/tmp/{{ taskId }}"
+        state: absent
+      ignore_errors: true
+      delegate_to: localhost
+
+    - name: Temp dir
+      file: 
+        path: "/tmp/{{ taskId }}"
+        state: directory
+      delegate_to: localhost
+
+    - name: taskpath
+      set_fact:
+        taskpath: ""
+
+    - name: init taskpath
+      set_fact:
+        taskpath: "../{{ init.scriptname | default('init') }}"
+
+    - name: Run init (script)
+      command: 
+        cmd: "{{ init.command }}"
+        chdir: "/tmp/{{ taskId }}/workspace"
+      become: "{{ init.become | default(false) }}"
+      when: not ansiblejudgescript
+
+    - name: Run init (ansible)
+      include_tasks: "labs/{{ labId }}/init.yml"
+      when: ansiblejudgescript
+
+    - name: Generate check list
+      set_fact:
+        checklistdict: "{{ checklistdict | default({}) | combine({ item:(range(checkpoints[item] | length) | list) }) }}"
+      with_items: "{{ checkpoints }}"
+
+    - name: Run checkpoints
+      include_tasks: "checkgroup.yml"
+      loop: "{{ checklistdict | dict2items }}"
+      loop_control:
+        loop_var: checklist
+
+    - name: Output result
+      copy:
+        content: "{{ result | to_json }}"
+        dest: "/tmp/{{ taskId }}/result"
+      delegate_to: localhost
+
+  always:
+    - name: include clear task
+      include: clear.yml

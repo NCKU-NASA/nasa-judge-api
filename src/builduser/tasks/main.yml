@@ -1,0 +1,22 @@
+- name: Add VPN user
+  import_role:
+    name: VpnGenerator/roles/addwguser
+  vars:
+    servername: "{{ item.name }}"
+    username: "{{ username }}"
+    fqdn: "{{ item.client.fqdn }}"
+    routes: "{{ item.client.AllowedIPs }}"
+    clientconfigdir: "{{ item.client.dir }}"
+    nameserver: "{{ item.client.DNS }}"
+    moreconfig: "{{ item.client.moreconfig }}"
+  with_items: "{{ wireguard.tunnels }}"
+  delegate_to: "{{ wireguard.host }}"
+
+- name: Set DNS record
+  include_tasks:
+    name: setdns.yml
+  loop: "{{ nameserver.records }}"
+  loop_control:
+    loop_var: record
+
+

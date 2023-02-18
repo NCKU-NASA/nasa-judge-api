@@ -1,0 +1,23 @@
+- name: Gen data with netmask
+  ansible.utils.update_fact:
+    updates:
+    - path: "{{ record['data'] }}"
+      value: "{{ record.netmask | ansible.utils.nthhost(record.ipindex) }}"
+  register: updated
+  when: data not in record and netmask in record and ipindex in record
+
+- name: Set record with netmask
+  set_fact:
+    record: "{{ updated.record }}"
+  when: data not in record and netmask in record and ipindex in record
+
+- name: Set DNS record
+  import_role:
+    name: Bind9Manager/roles/addrecord
+  vars:
+    host: "{{ record.host }}"
+    zone: "{{ record.zone }}"
+    type: "{{ record.type }}"
+    data: "{{ record.data }}"
+    NSIP: "{{ record.NSIP }}"
+  delegate_to: "{{ nameserver.host }}"

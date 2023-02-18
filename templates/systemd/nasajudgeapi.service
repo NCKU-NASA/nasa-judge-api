@@ -6,7 +6,9 @@ After=network.target
 User=nasa
 Group=nasa
 WorkingDirectory={{ nasajudgeapidir }}
-ExecStart=/usr/local/bin/nasajudgeapi
+ExecStart=/usr/local/bin/nasajudgeapi start
+ExecStop=/usr/local/bin/nasajudgeapi stop $MAINPID
+TimeoutStopSec=1000
 
 
 [Install]

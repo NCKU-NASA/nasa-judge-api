@@ -8,58 +8,41 @@
 - name: Init os var
   include_vars: "vars/{{ ansible_system | lower }}.yml"
 
-- name: Get named option path
-  include_tasks: "getnamedoptionpath.yml"
-
-- name: Make judge VPN client directory
-  file: "{{ wireguarddir }}/judgelanclient"
-    state: directory
+- name: Change mode of wireguard dir
+  file:
+    path: "{{ wireguarddir }}"
+    mode: "0711"
   become: true
+  delegate_to: "{{ wireguard.host }}"
 
-- name: Make testing VPN client directory
-  file: "{{ wireguarddir }}/testlanclient"
-    state: directory
-  become: true
-
-- name: Generate judge VPN server
-  include_role:
+- name: Generate VPN server
+  import_role:
     name: VpnGenerator/roles/addwgserver
   vars:
-    servername: judgelan
-    addresses: "{{ wireguard.judgelanips }}"
-    serverport: "{{ wireguard.judgelanport }}"
-    moreconfig: "MTU = {{ wireguard.judgelanMTU }}"
-  notify: Start judge VPN
-
-- name: Generate testing VPN server
-  include_role:
-    name: VpnGenerator/roles/addwgserver
-  vars:
-    servername: testlan
-    addresses: "{{ wireguard.testlanips }}"
-    serverport: "{{ wireguard.testlanport }}"
-    moreconfig: "MTU = {{ wireguard.testlanMTU }}"
-  notify: Start testing VPN
+    servername: "{{ item.name }}"
+    addresses: "{{ item.ips }}"
+    serverport: "{{ item.server.port }}"
+    moreconfig: "{{ item.server.moreconfig }}"
+  with_items: "{{ wireguard.tunnels }}"
+  delegate_to: "{{ wireguard.host }}"
+  notify: Start wireguard VPN
 
 - name: Set bind9 options
-  lineinfile:
-    path: "{{ namedoptionpath }}"
-    insertafter: "^\\s*directory.*;\\s*$"
-    line: "{{ item }}"
-  become: true
+  import_role:
+    name: Bind9Manager/roles/setoption
+  vars: "{{ item }}"
   with_items:
-    - "    allow-new-zones yes;"
-    - "    allow-query { any; };"
-    - "    max-ncache-ttl 0;"
-    - "    max-cache-ttl 0;"
-
-- name: Set bind9 dnssec-validation
-  lineinfile:
-    path: "{{ namedoptionpath }}"
-    insertafter: "^\\s*directory.*;\\s*$"
-    regexp: "^\\s*dnssec-validation\\s*.*;\\s*$"
-    line: "    dnssec-validation no;"
-  become: true
+    - option: "    allow-new-zones yes;"
+      regexp: ""
+    - option: "    allow-query { any; };"
+      regexp: ""
+    - option: "    max-ncache-ttl 0;"
+      regexp: ""
+    - option: "    max-cache-ttl 0;"
+      regexp: ""
+    - option: "    dnssec-validation no;"
+      regexp: "^\\s*dnssec-validation\\s*.*;\\s*$"
+  delegate_to: "{{ nameserver.host }}"
   notify: Restart named
 
 - name: Add nasa user
@@ -67,6 +50,51 @@
     name: nasa
     generate_ssh_key: yes
   become: true
+
+- name: Slurp authorized_key of nasa
+  slurp:
+    src: "/home/nasa/.ssh/id_rsa.pub"
+  register: authorized_key
+
+- name: Add nasa user on wireguard host
+  user:
+    name: nasa
+  become: true
+  delegate_to: "{{ wireguard.host }}"
+
+- name: Set authorized_key of nasa user on wireguard host
+  ansible.posix.authorized_key:
+    name: nasa
+    key: "{{ authorized_key['content'] | b64decode }}"
+  become: true
+  delegate_to: "{{ wireguard.host }}"
+
+- name: Set nasa sudo nopass on wireguard host
+  copy:
+    content: "nasa ALL=(ALL:ALL) NOPASSWD:ALL"
+    dest: "/etc/sudoers.d/nasa"
+  become: true
+  delegate_to: "{{ wireguard.host }}"
+
+- name: Add nasa user on nameserver host
+  user:
+    name: nasa
+  become: true
+  delegate_to: "{{ nameserver.host }}"
+
+- name: Set authorized_key of nasa user on nameserver host
+  ansible.posix.authorized_key:
+    name: nasa
+    key: "{{ authorized_key['content'] | b64decode }}"
+  become: true
+  delegate_to: "{{ nameserver.host }}"
+
+- name: Set nasa sudo nopass on nameserver host
+  copy:
+    content: "nasa ALL=(ALL:ALL) NOPASSWD:ALL"
+    dest: "/etc/sudoers.d/nasa"
+  become: true
+  delegate_to: "{{ nameserver.host }}"
 
 - name: Copy judge api directory
   copy:

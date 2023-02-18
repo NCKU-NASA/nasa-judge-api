@@ -1,15 +1,11 @@
 enablessl: false
 ListenHost: "{{ ListenHost }}"
-port: {{ port }}
+ListenPort: {{ ListenPort }}
 certificate: ""
 privatekey: ""
-db:
-  host: "{{ db.dbhost }}"
-  port: {{ db.dbport }}
-  user: "{{ db.dbusername }}"
-  password: "{{ db.dbpassword }}"
-  db: "{{ db.dbname }}"
-  charset: "utf8"
-
+judegbackendhost: "127.0.0.1"
+{{ { "nameserver":nameserver } | to_nice_yaml(indent=2, sort_keys=False) }}
+{{ { "wireguard":wireguard } | to_nice_yaml(indent=2, sort_keys=False) }}
+workerspubkeys: []
 workers: []
 

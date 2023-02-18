@@ -1,0 +1,118 @@
+- block:
+    - name: "Init checkpoint: {{ checklist.key }}/{{ taskindex }}"
+      debug:
+        msg: "Init checkpoint: {{ checklist.key }}/{{ taskindex }}"
+    - name: Recurse checklist list
+      set_fact: 
+        returnchecklistlist: "{{ (returnchecklistlist | default([]))+[checklist] }}"
+
+    - name: Recurse taskindex list
+      set_fact: 
+        returntaskindexlist: "{{ (returntaskindexlist | default([]))+[taskindex] }}"
+
+    - name: Run precheck
+      include_tasks: "checkgroup.yml"
+      loop: "{{ checkpoints[checklist.key][taskindex].check | default({}) | dict2items }}"
+      loop_control:
+        loop_var: checklist
+
+    - name: Set checklist from recurse checklist list
+      set_fact:
+        checklist: "{{ returnchecklistlist.pop() }}"
+
+    - name: Set taskindex from recurse taskindex list
+      set_fact:
+        taskindex: "{{ returntaskindexlist.pop() }}"
+
+    - name: Init cancheck
+      set_fact:
+        cancheck: true
+
+    - name: Check checklist result
+      set_fact:
+        cancheck: false
+      when: not (result[item.0.key][item.1].ans)
+      with_subelements:
+        - "{{ checkpoints[checklist.key][taskindex].check | default({}) | dict2items }}"
+        - "value"
+
+    - block:
+        - block:
+            - name: "Set taskpath"
+              set_fact:
+                taskpath: "../{{ checklist.key }}/{{ checkpoints[checklist.key][taskindex].scriptname | default(taskindex) }}"
+
+            - name: "Run checkpoint: {{ checklist.key }}/{{ taskindex }} (script)"
+              command:
+                cmd: "{{ checkpoints[checklist.key][taskindex].command }}"
+                chdir: "/tmp/{{ taskId }}/workspace"
+              become: "{{ checkpoints[checklist.key][taskindex].become | default(false) }}"
+              ignore_errors: true
+              register: scriptresult
+            - name: Get stdout and stderr
+              blockinfile:
+                path: "/tmp/{{ taskId }}/{{ item }}"
+                block: "{% if scriptresult[item] != '' %}{{ scriptresult[item] | default(' ') }}{% else %} {% endif %}"
+                marker: "# {mark} {{ checklist.key }}/{{ taskindex }}"
+                create: true
+              delegate_to: localhost
+              with_items:
+                - stdout
+                - stderr
+            - name: Update result
+              ansible.utils.update_fact: 
+                updates:
+                - path: "result['{{ checklist.key }}'][{{ taskindex }}]"
+                  value:
+                    message: "{{ checkpoints[checklist.key][taskindex].message }}"
+                    ans: "{{ scriptresult is not failed }}"
+                    weight: "{{ checkpoints[checklist.key][taskindex].weight }}"
+              register: updated
+            - name: Set result
+              set_fact:
+                result: "{{ updated.result }}"
+          when: not ansiblejudgescript
+
+        - block:
+            - name: "Run checkpoint: {{ checklist.key }}/{{ taskindex }} (ansible)"
+              include_tasks: "labs/{{ labId }}/{{ checklist.key }}/{{ checkpoints[checklist.key][taskindex].scriptname | default(taskindex) }}.yml"
+            - name: Update result
+              ansible.utils.update_fact: 
+                updates:
+                - path: "result['{{ checklist.key }}'][{{ taskindex }}]"
+                  value:
+                    message: "{{ checkpoints[checklist.key][taskindex].message }}"
+                    ans: "{{ return }}"
+                    weight: "{{ checkpoints[checklist.key][taskindex].weight }}"
+              register: updated
+            - name: Set result
+              set_fact:
+                result: "{{ updated.result }}"
+          when: ansiblejudgescript
+      when: cancheck
+
+    - block:
+        - name: Get stdout and stderr
+          blockinfile:
+            path: "/tmp/{{ taskId }}/{{ item }}"
+            block: " "
+            marker: "# {mark} {{ checklist.key }}/{{ taskindex }}"
+            create: true
+          delegate_to: localhost
+          with_items:
+            - stdout
+            - stderr
+        - name: Update result
+          ansible.utils.update_fact: 
+            updates:
+            - path: "result['{{ checklist.key }}'][{{ taskindex }}]"
+              value:
+                message: "{{ checkpoints[checklist.key][taskindex].message }}"
+                ans: false
+                weight: "{{ checkpoints[checklist.key][taskindex].weight }}"
+          register: updated
+        - name: Set result
+          set_fact:
+            result: "{{ updated.result }}"
+      when: not cancheck
+  when: (result[checklist.key][taskindex] | length) == 0

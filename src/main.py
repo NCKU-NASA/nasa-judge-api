@@ -1,143 +1,263 @@
 import os
+import io
 import time
 import json
 import ipaddress
 import re
-import pymysql
 import sys
 import uuid
-#import charts
+import requests
+import threading
+import shutil
+import subprocess
+import importlib
+import zipfile
+import usersetting
 
+#import charts
+from paramiko import SSHClient, SFTPClient
 from flask import Flask,request,redirect,Response,make_response,jsonify,render_template,session,send_file
 
 app = Flask(__name__)
 
+hostusing = False
+
+judgingusers = []
+
+stoping = False
+
+lock = threading.Lock()
+
+adduserlock = threading.Lock()
+
 with open('config.yaml', 'r') as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
+    config['maxworkerslen'] = len(config['workers'])
+
+@app.route('/', methods=['GET'])
+def help():
+    return ""
+
+@app.route('/stop', methods=['GET'])
+def stop():
+    stoping = True
+    return json.dumps(len(config['workers']) >= config['maxworkerslen'] and not hostusing and len(judgingusers) == 0)
 
 @app.route('/judge',methods=['POST'])
 def judge():
-    #if type(ipaddress.ip_address(request.form["cltip"])).__name__ != 'IPv4Address':
-    #    return 'error'
+    if stoping:
+        return json.dumps({'alive':False})
     data = json.loads(request.get_data())
-    with open('lab/' + data['labId'] + '/data.json', 'r') as f:
-        labdata = json.loads(f.read())
-    if not labdata['checkonhost']:
-        while len(config['workers']) <= 0:
+    lock.acquire()
+    if data['username'] in judgingusers:
+        lock.release()
+        return json.dumps({'alive':False})
+    judgingusers.append(data['username'])
+    lock.release()
+    with open(f'judge/labs/{data["labId"]}/config.yaml', 'r') as f:
+        labdata = yaml.load(f, Loader=yaml.FullLoader)
+    if labdata['checkonhost']:
+        lock.acquire()
+        while hostusing:
+            lock.release()
             time.sleep(0.1)
-        nownode = config['workers'].pop(0)
-    outlog=""
-    errlog=""
+            lock.acquire()
+        hostusing = True
+        data['workerhost'] = "localhost"
+        lock.release()
+    else:
+        lock.acquire()
+        while len(config['workers']) <= 0:
+            lock.release()
+            time.sleep(0.1)
+            lock.acquire()
+        data['workerhost'] = config['workers'].pop(0)
+        lock.release()
+    data['taskId'] = str(uuid.uuid4())
+
     try:
-        data['wanip'] = os.popen('grep -B 1 -A 3 -i \'# ' + data['studentId'] + '\' /etc/wireguard/server.conf | grep -oP \'(?<=AllowedIPs\s=\s)\d+(\.\d+){3}\' | tail -n 1').read().strip()
-        if 'final' in labdata and labdata['final']:
-            data['wanip'] = os.popen('grep -i \'' + data['studentId'] + '\' finaluserlist.conf | awk \'{print $2}\'').read().strip()
+        try:
+            process = subprocess.run(f"ansible-playbook judge/setup.yml -e '{json.dumps(data)}'", shell=True, timeout=labdata['timeout'])
+            if process.returncode < 0 or process.returncode == 143 or process.returncode == 137:
+                raise Exception('bad return code')
+        except:
+            try:
+                subprocess.run(f"ansible-playbook judge/clearsetup.yml -e '{json.dumps(data)}'", shell=True, timeout=labdata['timeout'])
+            except: 
+                pass
+            return json.dumps({'alive':False})
 
+        with open(f'/tmp/{data["taskId"]}/result', 'r') as f:
+            result = f.read()
+        with open(f'/tmp/{data["taskId"]}/stdout', 'r') as f:
+            stdout = f.read()
+        with open(f'/tmp/{data["taskId"]}/stderr', 'r') as f:
+            stderr = f.read()
+    finally:
+        shutil.rmtree(f'/tmp/{data["taskId"]}', ignore_errors=True)
+
+        lock.acquire()
         if labdata['checkonhost']:
-            os.system('rm -r /tmp/judgescript')
-            os.system('cp -r lab/' + data['labId'] + ' /tmp/judgescript')
-            if not os.path.isfile('lab/' + data['labId'] + '/judge.py'):
-                os.system('cp judge.py /tmp/judgescript/judge.py')
-            if not os.path.isfile('lab/' + data['labId'] + '/onstartjudge.sh'):
-                os.system('cp onstartjudge.sh /tmp/judgescript/onstartjudge.sh')
-            if not os.path.isfile('lab/' + data['labId'] + '/onclearjudge.sh'):
-                os.system('cp onclearjudge.sh /tmp/judgescript/onclearjudge.sh')
-            with open('/tmp/judgescript/getdata.json', 'w') as f:
-                f.write(json.dumps(data))
-            getans = os.popen('cd /tmp/judgescript/; python3 judge.py').read().strip()
-            if os.path.isfile('/tmp/judgescript/judgelog'):
-                with open('/tmp/judgescript/judgelog') as f:
-                    outlog = f.read();
-            
-            if os.path.isfile('/tmp/judgescript/judgeerrlog'):
-                with open('/tmp/judgescript/judgeerrlog') as f:
-                    errlog = f.read();
-            
-            os.system('rm -r /tmp/judgescript')
+            hostusing = False
         else:
-            with open('/tmp/getdata.json', 'w') as f:
-                f.write(json.dumps(data))
-            os.system('ssh root@' + nownode + ' rm -r judgescript')
-            os.system('scp -r lab/' + data['labId'] + ' root@' + nownode + ':judgescript')
-            if not os.path.isfile('lab/' + data['labId'] + '/judge.py'):
-                os.system('scp judge.py root@' + nownode + ':judgescript/judge.py')
-            if not os.path.isfile('lab/' + data['labId'] + '/onstartjudge.sh'):
-                os.system('scp onstartjudge.sh root@' + nownode + ':judgescript/onstartjudge.sh')
-            if not os.path.isfile('lab/' + data['labId'] + '/onclearjudge.sh'):
-                os.system('scp onclearjudge.sh root@' + nownode + ':judgescript/onclearjudge.sh')
-            os.system('scp ' + os.path.join('/tmp', 'getdata.json') + ' root@' + nownode + ':judgescript/getdata.json')
-            getans = os.popen('ssh root@' + nownode + ' "cd judgescript/; python3 judge.py"').read().strip()
-            judgelogoutput = str(uuid.uuid4())
-            os.system('scp root@' + nownode + ':judgescript/judgelog /tmp/' + judgelogoutput)
-            if os.path.isfile('/tmp/' + judgelogoutput):
-                with open('/tmp/' + judgelogoutput) as f:
-                    outlog = f.read();
-                os.remove('/tmp/' + judgelogoutput)
-            os.system('scp root@' + nownode + ':judgescript/judgeerrlog /tmp/' + judgelogoutput)
-            if os.path.isfile('/tmp/' + judgelogoutput):
-                with open('/tmp/' + judgelogoutput) as f:
-                    errlog = f.read();
-                os.remove('/tmp/' + judgelogoutput)
-            os.system('ssh root@' + nownode + ' "rm -r judgescript"')
-    except Exception as ex:
-        print(ex, file=sys.stderr)
-        if labdata['checkonhost']:
-            os.system('cd /tmp/judgescript; bash onclearjudge.sh; cd /tmp; rm -r /tmp/judgescript')
-        else:
-            os.system('ssh root@' + nownode + ' "cd judgescript/; bash onclearjudge.sh ' + str(labdata['checkonhost']) + ' ' + data['wanip'] + ' ' + data['studentId'] + '; cd ~; rm -r judgescript"')
+            config['workers'].append(data['workerhost'])
+        judgingusers.remove(data['username'])
+        lock.release()
+    return json.dumps({'alive':True, 'results':json.loads(result), 'stdout':stdout, 'stderr':stderr})
 
-    if not labdata['checkonhost']:
-        config['workers'].append(nownode)
-    return json.dumps({'results':json.loads(getans), 'stdout':outlog, 'stderr':errlog})
+@app.route('/canjudge',methods=['POST'])
+def canjudge():
+    if stoping:
+        return json.dumps(False)
+    data = json.loads(request.get_data())
+    lock.acquire()
+    result = !(data['username'] in judgingusers):
+    lock.release()
+    return json.dumps(result)
 
-@app.route('/',methods=['GET'])
+@app.route('/getLabs',methods=['GET'])
+def getLabs():
+    if stoping:
+        return json.dumps([])
+    result = []
+    for a in os.listdir('judge/labs'):
+        data = json.loads(getLab(a))
+        if data is not None:
+            result.appent(data)
+
+    return json.dumps(result)
+
+@app.route('/getLab/<str:labId>',methods=['GET'])
+def getLab(path):
+    if stoping:
+        return json.dumps(None)
+    labId = labId.split('/')[0]
+    result = None
+    if os.path.isdir(f'judge/labs/{labId}') and os.path.isfile(f'judge/labs/{labId}/config.yaml'):
+        with open(f'judge/labs/{labId}/config.yaml', 'r') as f:
+            try:
+                labconfig = yaml.load(f, Loader=yl.FullLoader)
+            except yaml.scanner.ScannerError:
+                labconfig = {}
+        if 'promissions' not in labconfig:
+            labconfig['promissions'] = []
+        if 'frontendvariable' not in labconfig:
+            labconfig['frontendvariable'] = []
+        result = {'id':path, 'contents':labconfig['frontendvariable'], 'promissions':labconfig['promissions'], 'deadlines':labconfig['deadlines']}
+    return json.dumps(result)
+
+@app.route('/alive',methods=['GET'])
 def alive():
+    if stoping:
+        return "false"
     return "true"
 
-@app.route('/serverlist',methods=['GET'])
+@app.route('/workerlist',methods=['GET'])
 def serverlist():
     return json.dumps(config['workers'])
 
-@app.route('/studentidtoip',methods=['POST'])
-def studentidtoip():
-    data = json.loads(request.get_data())
-    if data.__contains__('studentId') and data['studentId'] != '':
-        return os.popen('grep -B 1 -A 3 -i \'# ' + data['studentId'] + '\' /etc/wireguard/server.conf | grep -oP \'(?<=AllowedIPs\s=\s)\d+(\.\d+){3}\' | tail -n 1').read().strip()
-    elif data.__contains__('ip') and data['ip'] != '':
-        return os.popen('grep -B 1 -i \'' + data['ip'] + '/\' /etc/wireguard/server.conf | head -n 1 | sed \'s/# //g\'').read().strip()
-    else:
-        return "bad arg..."
+@app.route('/getuserdata',methods=['POST'])
+def getuserdata():
+    if stoping:
+        return ""
+    data = request.get_json()
+    session = requests.Session()
+    session.post(f"{config['judegbackendhost']}/user/login", json={'username':config['adminuser'],'password':config['adminpassword']})
+    r = session.post(f"{config['judegbackendhost']}/user/userdata", json=data)
+    return r.test
 
+@app.route('/getalluserdata',methods=['GET'])
+def getalluserdata():
+    if stoping:
+        return ""
+    session = requests.Session()
+    session.post(f"{config['judegbackendhost']}/user/login", json={'username':config['adminuser'],'password':config['adminpassword']})
+    r = session.get(f"{config['judegbackendhost']}/user/alluserdata")
+    return r.test
 
-@app.route('/getdbscore',methods=['GET'])
-@app.route('/getdbscore/<path:path>',methods=['GET'])
-def getdbscore(path=''):
-    showresult = False
-    if path == 'result':
-        showresult = True
+@app.route('/download/<str:labId>/<path:path>',methods=['GET'])
+def download(labId, path):
+    if stoping:
+        return ""
+    return send_from_directory(f'judge/labs/{labId}/download/', path, as_attachment=True)
 
-    # 建立Connection物件
-    conn = pymysql.connect(**config["db"])
-    cursor = conn.cursor()
-    if showresult:
-        cursor.execute("SELECT labid, studentId, score, result FROM score")
-    else:
-        cursor.execute("SELECT labid, studentId, score FROM score")
+@app.route('/download/userconfig',methods=['POST'])
+def userconfig():
+    if stoping:
+        return ""
+    data = request.get_json()
 
-    result_set = cursor.fetchall()
+    zipname = str(uuid.uuid4())
+
+    with zipfile.ZipFile(f'/tmp/{zipname}.zip', 'w') as myzip:
+        with SSHClient() as ssh:
+            ssh.load_system_host_keys()
+            ssh.connect(hostname=config['wireguard']['host'])
+            with SFTPClient.from_transport(ssh.get_transport()) as sftp:
+                for tunnel in config["wireguard"]["tunnels"]
+                    with scp.file(f'/etc/wireguard/{tunnel["client"]["dir"]}/{data[username]}.conf','r') as f:
+                        myzip.writestr(f'{tunnel["client"]["configname"]}.conf', f.read())        
+
+    myzip.writestr('authorized_keys', '\n'.join(config['workerspubkeys']))
+
+    for nowconfigfile in usersetting.userconfig(data):
+        with nowconfigfile['file'] as f:
+            myzip.writestr(os.path.basename(nowconfigfile['filename']), f.read())
+
+    sendfile = io.BytesIO()
+    with open(f'/tmp/{zipname}.zip', 'rb') as f:
+        sendfile.write(f.read())
+    sendfile.seek(0)
+    os.remove(f'/tmp/{zipname}.zip')
+    return send_file(sendfile, mimetype='application/zip', attachment_filename='userconfig.zip')
+
+@app.route('/download/<str:labId>/description',methods=['GET'])
+def description(labId):
+    if stoping:
+        return ""
+    with open(f'judge/labs/{data["labId"]}/config.yaml', 'r') as f:
+        labdata = yaml.load(f, Loader=yaml.FullLoader)
+    return send_from_directory(f'judge/labs/{labId}/', labdata['description'], as_attachment=True)
+
+@app.route('/builduser',methods=['POST'])
+def onbuilduser():
+    if stoping:
+        return ""
+    adduserlock.acquire()
+    try:
+        data = request.get_json()
+        process = subprocess.run(f"ansible-playbook builduser/setup.yml -e '{json.dumps(data)}'", shell=True)
+        usersetting.builduser(data)
+    finally:
+        adduserlock.release()
+
+@app.route('/getresult',methods=['POST'])
+def getresult():
+    if stoping:
+        return json.dumps(None)
+    data = request.get_json()
+    session = requests.Session()
+    session.post(f"{config['judegbackendhost']}/user/login", json={'username':config['adminuser'],'password':config['adminpassword']})
+    r = session.post(f"{config['judegbackendhost']}/score", json=data)
+    result_set = json.loads(r.text)
     allscore = {}
     for a in result_set:
-        if not allscore.__contains__(a[0]):
-            allscore[a[0]] = {}
-        if not allscore[a[0]].__contains__(a[1]):
-            allscore[a[0]][a[1]] = {'score':a[2]}
-            if showresult:
-                allscore[a[0]][a[1]]['result'] = json.loads(a[3])
-        elif allscore[a[0]][a[1]]['score'] < a[2]:
-            allscore[a[0]][a[1]] = {'score':a[2]}
-            if showresult:
-                allscore[a[0]][a[1]]['result'] = json.loads(a[3])
+        nowdata = {'score':a['score']}
+        if data.get('showresult', False):
+            nowdata['result'] = a['result']
+        if a['labId'] not in allscore:
+            allscore[a['labId']] = {}
+
+        if data.get('max', False):
+            if a['username'] not in allscore[a['labId']]:
+                allscore[a['labId']][a['username']] = []
+            allscore[a['labId']][a['username']].append(nowdata)
+        else:
+            if a['username'] not in allscore[a['labId']] or allscore[a['labId']][a['username']]['score'] < a['score']:
+                allscore[a['labId']][a['username']] = nowdata
     return json.dumps(allscore)
+
+
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -154,6 +274,6 @@ def forbidden(e):
 
 
 if __name__ == "__main__":
-    app.run(host="::",port=int(config['port']))
+    app.run(host="::",port=int(config['ListenPort']))
 
 
