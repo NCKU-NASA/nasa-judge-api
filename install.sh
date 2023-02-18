@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 dirpath=$(dirname "$0")
 
 ansible-playbook $dirpath/setup.yml
