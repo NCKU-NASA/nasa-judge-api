@@ -1,0 +1,15 @@
+- name: Set bind9 options
+  include_role:
+    name: Bind9Manager/roles/setoption
+  vars: "{{ item }}"
+  with_items:
+    - option: "    allow-new-zones yes;"
+      regexp: ""
+    - option: "    allow-query { any; };"
+      regexp: ""
+    - option: "    max-ncache-ttl 0;"
+      regexp: ""
+    - option: "    max-cache-ttl 0;"
+      regexp: ""
+    - option: "    dnssec-validation no;"
+      regexp: "^\\s*dnssec-validation\\s*.*;\\s*$"

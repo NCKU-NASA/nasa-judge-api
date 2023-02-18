@@ -16,32 +16,12 @@
   delegate_to: "{{ wireguard.host }}"
 
 - name: Generate VPN server
-  import_role:
-    name: VpnGenerator/roles/addwgserver
-  vars:
-    servername: "{{ item.name }}"
-    addresses: "{{ item.ips }}"
-    serverport: "{{ item.server.port }}"
-    moreconfig: "{{ item.server.moreconfig }}"
-  with_items: "{{ wireguard.tunnels }}"
+  import_tasks: setvpn.yml
   delegate_to: "{{ wireguard.host }}"
   notify: Start wireguard VPN
 
 - name: Set bind9 options
-  import_role:
-    name: Bind9Manager/roles/setoption
-  vars: "{{ item }}"
-  with_items:
-    - option: "    allow-new-zones yes;"
-      regexp: ""
-    - option: "    allow-query { any; };"
-      regexp: ""
-    - option: "    max-ncache-ttl 0;"
-      regexp: ""
-    - option: "    max-cache-ttl 0;"
-      regexp: ""
-    - option: "    dnssec-validation no;"
-      regexp: "^\\s*dnssec-validation\\s*.*;\\s*$"
+  import_tasks: setnamed.yml
   delegate_to: "{{ nameserver.host }}"
   notify: Restart named
 

@@ -1,0 +1,9 @@
+- name: Generate VPN server
+  include_role:
+    name: VpnGenerator/roles/addwgserver
+  vars:
+    servername: "{{ item.name }}"
+    addresses: "{{ item.ips }}"
+    serverport: "{{ item.server.port }}"
+    moreconfig: "{{ item.server.moreconfig }}"
+  with_items: "{{ wireguard.tunnels }}"
