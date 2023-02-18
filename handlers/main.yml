@@ -12,7 +12,7 @@
     name: named
     state: restarted
   become: true
-  delegate_to: "{{ nameserverhost }}"
+  delegate_to: "{{ nameserver.host }}"
 
 - name: Start judge
   systemd: 
