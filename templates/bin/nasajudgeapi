@@ -25,6 +25,7 @@ then
     fi
     #gunicorn --certfile=server.crt --keyfile=server.key --bind [::]:443 server:app
 elif [ "$mode" == "stop" ]
+then
     if $(yq e '.enablessl' config.yaml)
     then
         proto="https://"

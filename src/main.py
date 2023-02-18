@@ -111,7 +111,7 @@ def canjudge():
         return json.dumps(False)
     data = json.loads(request.get_data())
     lock.acquire()
-    result = !(data['username'] in judgingusers):
+    result = not (data['username'] in judgingusers):
     lock.release()
     return json.dumps(result)
 

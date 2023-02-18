@@ -18,11 +18,17 @@
 - name: Generate VPN server
   import_tasks: setvpn.yml
   delegate_to: "{{ wireguard.host }}"
+
+- debug:
+    msg: "VPN complate"
   notify: Start wireguard VPN
 
 - name: Set bind9 options
   import_tasks: setnamed.yml
   delegate_to: "{{ nameserver.host }}"
+
+- debug:
+    msg: "named complate"
   notify: Restart named
 
 - name: Add nasa user
