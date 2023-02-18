@@ -17,6 +17,8 @@ if [ "$INSTALL_PYTHON_VERSION" = "" ]; then
 	INSTALL_PYTHON_VERSION=$(find_python)
 fi
 
+INSTALL_PYTHON_PATH=python${INSTALL_PYTHON_VERSION:-3.7}
+
 cd $1
 
 $INSTALL_PYTHON_PATH -m venv venv

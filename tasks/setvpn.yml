@@ -7,3 +7,4 @@
     serverport: "{{ item.server.port }}"
     moreconfig: "{{ item.server.moreconfig }}"
   with_items: "{{ wireguard.tunnels }}"
+  ignore_errors: true
