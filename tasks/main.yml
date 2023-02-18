@@ -44,7 +44,7 @@
 
 - name: Set authorized_key of nasa user on wireguard host
   ansible.posix.authorized_key:
-    name: nasa
+    user: nasa
     key: "{{ authorized_key['content'] | b64decode }}"
   become: true
   delegate_to: "{{ wireguard.host }}"
@@ -64,7 +64,7 @@
 
 - name: Set authorized_key of nasa user on nameserver host
   ansible.posix.authorized_key:
-    name: nasa
+    user: nasa
     key: "{{ authorized_key['content'] | b64decode }}"
   become: true
   delegate_to: "{{ nameserver.host }}"
