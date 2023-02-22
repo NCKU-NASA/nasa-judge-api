@@ -127,12 +127,12 @@ def getLabs():
     for a in os.listdir('judge/labs'):
         data = json.loads(getLab(a))
         if data is not None:
-            result.appent(data)
+            result.append(data)
 
     return json.dumps(result)
 
 @app.route('/getLab/<string:labId>',methods=['GET'])
-def getLab(path):
+def getLab(labId):
     if stoping:
         return json.dumps(None)
     labId = labId.split('/')[0]
@@ -140,14 +140,16 @@ def getLab(path):
     if os.path.isdir(f'judge/labs/{labId}') and os.path.isfile(f'judge/labs/{labId}/config.yaml'):
         with open(f'judge/labs/{labId}/config.yaml', 'r') as f:
             try:
-                labconfig = yaml.load(f, Loader=yl.FullLoader)
+                labconfig = yaml.load(f, Loader=yaml.FullLoader)
             except yaml.scanner.ScannerError:
                 labconfig = {}
         if 'promissions' not in labconfig:
             labconfig['promissions'] = []
         if 'frontendvariable' not in labconfig:
             labconfig['frontendvariable'] = []
-        result = {'id':path, 'contents':labconfig['frontendvariable'], 'promissions':labconfig['promissions'], 'deadlines':labconfig['deadlines']}
+        if 'deadlines' not in labconfig:
+            labconfig['deadlines'] = []
+        result = {'id':labId, 'contents':labconfig['frontendvariable'], 'promissions':labconfig['promissions'], 'deadlines':labconfig['deadlines']}
     return json.dumps(result)
 
 @app.route('/alive',methods=['GET'])
@@ -183,7 +185,12 @@ def getalluserdata():
 def download(labId, path):
     if stoping:
         return ""
-    return send_from_directory(f'judge/labs/{labId}/download/', path, as_attachment=True)
+    if os.path.isfile(f'judge/labs/{labId}/download/{path}'):
+        return send_from_directory(f'judge/labs/{labId}/download/', path, as_attachment=True)
+    else:
+        return_result = {'code': 404, 'Success': False,
+                         "Message": "The website is not available currently"}
+        return jsonify(return_result), 404
 
 @app.route('/download/userconfig',methods=['POST'])
 def userconfig():
@@ -192,32 +199,44 @@ def userconfig():
     data = request.get_json()
     zipname = str(uuid.uuid4())
 
-    sendfile = io.BytesIO()
-    with zipfile.ZipFile(sendfile, 'w') as myzip:
-        with SSHClient() as ssh:
-            ssh.load_system_host_keys()
-            ssh.set_missing_host_key_policy(AutoAddPolicy())
-            ssh.connect(hostname=config['wireguard']['host'])
-            with SFTPClient.from_transport(ssh.get_transport()) as sftp:
-                for tunnel in config["wireguard"]["tunnels"]:
-                    with sftp.file(f'/etc/wireguard/{tunnel["client"]["dir"]}/{data["username"]}.conf','r') as f:
-                        myzip.writestr(f'{tunnel["client"]["configname"]}.conf', f.read())        
+    try:
+        sendfile = io.BytesIO()
+        with zipfile.ZipFile(sendfile, 'w') as myzip:
+            with SSHClient() as ssh:
+                ssh.load_system_host_keys()
+                ssh.set_missing_host_key_policy(AutoAddPolicy())
+                ssh.connect(hostname=config['wireguard']['host'])
+                with SFTPClient.from_transport(ssh.get_transport()) as sftp:
+                    for tunnel in config["wireguard"]["tunnels"]:
+                        with sftp.file(f'/etc/wireguard/{tunnel["client"]["dir"]}/{data["username"]}.conf','r') as f:
+                            myzip.writestr(f'{tunnel["client"]["configname"]}.conf', f.read())        
 
-        myzip.writestr('authorized_keys', '\n'.join(config['workerspubkeys']))
+            myzip.writestr('authorized_keys', '\n'.join(config['workerspubkeys']))
 
-        for nowconfigfile in usersetting.userconfig(data):
-            with nowconfigfile['file'] as f:
-                myzip.writestr(os.path.basename(nowconfigfile['filename']), f.read())
-    sendfile.seek(0)
-    return Response(sendfile.getvalue(), mimetype='application/zip', headers={'Content-Disposition': 'attachment;filename=userconfig.zip'})
+            for nowconfigfile in usersetting.userconfig(data):
+                with nowconfigfile['file'] as f:
+                    myzip.writestr(os.path.basename(nowconfigfile['filename']), f.read())
+        sendfile.seek(0)
+        return Response(sendfile.getvalue(), mimetype='application/zip', headers={'Content-Disposition': 'attachment;filename=userconfig.zip'})
+    except:
+        return_result = {'code': 404, 'Success': False,
+                         "Message": "The website is not available currently"}
+        return jsonify(return_result), 404
+
 
 @app.route('/download/<string:labId>/description',methods=['GET'])
 def description(labId):
     if stoping:
         return ""
-    with open(f'judge/labs/{data["labId"]}/config.yaml', 'r') as f:
+    with open(f'judge/labs/{labId}/config.yaml', 'r') as f:
         labdata = yaml.load(f, Loader=yaml.FullLoader)
-    return send_from_directory(f'judge/labs/{labId}/', labdata['description'], as_attachment=True)
+    
+    if os.path.isfile(f'judge/labs/{labId}/{labdata["description"]}'):
+        return send_from_directory(f'judge/labs/{labId}/', labdata['description'], as_attachment=True)
+    else:
+        return_result = {'code': 404, 'Success': False,
+                         "Message": "The website is not available currently"}
+        return jsonify(return_result), 404
 
 @app.route('/builduser',methods=['POST'])
 def onbuilduser():

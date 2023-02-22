@@ -46,6 +46,15 @@
     generate_ssh_key: yes
   become: true
 
+- name: Copy ssh config file
+  template:
+    src: "templates/config/ssh.config"
+    dest: "/home/nasa/.ssh/config"
+    mode: 0744
+    owner: nasa
+    group: nasa
+  become: true
+
 - name: Slurp authorized_key of nasa
   slurp:
     src: "/home/nasa/.ssh/id_rsa.pub"

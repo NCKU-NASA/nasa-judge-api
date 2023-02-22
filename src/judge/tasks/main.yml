@@ -19,12 +19,23 @@
         path: "~/.ssh"
         state: directory
       when: not checkonhost
+    
+    - name: Check ssh config
+      stat:
+        path: "~/.ssh/config"
+      register: sshconfig
+
+    - name: Backup ssh config
+      copy: 
+        src: "~/.ssh/config"
+        dest: "/tmp/ssh.config.bak"
+        remote_src: true
+      when: sshconfig.stat.exist
 
     - name: Set ssh config
       template:
         src: "templates/ssh.config"
         dest: "~/.ssh/config"
-      when: not checkonhost
 
     - name: Install package
       include_tasks: installpackage.yml
@@ -32,12 +43,19 @@
       loop_control:
         loop_var: nowpackage
 
+    - name: Check resolv.conf bak
+      stat:
+        path: "/tmp/resolv.conf.bak"
+      register: resolvconfig
+      become: true
+
     - name: Restore resolv.conf
       copy: 
         src: "/tmp/resolv.conf.bak"
         dest: "/etc/resolv.conf"
         remote_src: true
       become: true
+      when: resolvconfig.stat.exist
 
     - name: Send script to worker
       copy:

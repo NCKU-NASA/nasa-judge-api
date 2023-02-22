@@ -4,7 +4,7 @@
       name: VpnGenerator/roles/addwgserver
     vars:
       servername: "{{ tunnel.name }}"
-      addresses: "{{ tunnel.ips }}"
+      addresses: "{{ tunnel.server.ips | join(',') }}"
       serverport: "{{ tunnel.server.port }}"
       moreconfig: "{{ tunnel.server.moreconfig }}"
     delegate_to: "{{ wireguard.host }}"

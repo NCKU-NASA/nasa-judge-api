@@ -7,7 +7,6 @@ nameserver:
     zone: nasa
     type: A
     netmask: "10.187.100.0/24"
-    ipindex: "{%raw%}{{ ipindex }}{%endraw%}"
     NSIP: 10.187.10.254
   - host: "{%raw%}{{ username }}{%endraw%}"
     zone: nasa
@@ -18,7 +17,6 @@ nameserver:
     zone: final.nasa
     type: A
     netmask: "10.187.11.0/24"
-    ipindex: "{%raw%}{{ ipindex }}{%endraw%}"
     NSIP: 10.187.10.254
   - host: "{%raw%}{{ username }}{%endraw%}"
     zone: final.nasa
@@ -29,9 +27,10 @@ wireguard:
   host: localhost
   tunnels:
   - name: judgelan
-    ips: 10.187.100.254/24
     server:
       port: 7654
+      ips: 
+      - 10.187.100.254/24
       moreconfig: "MTU = 1420"
     client:
       configname: judge
@@ -55,9 +54,10 @@ wireguard:
 
         MTU = 1420'
   - name: testlan
-    ips: 10.187.200.254/24
     server:
       port: 7777
+      ips: 
+      - 10.187.200.254/24
       moreconfig: "MTU = 1420"
     client:
       configname: test

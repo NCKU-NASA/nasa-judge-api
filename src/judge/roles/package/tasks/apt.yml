@@ -1,0 +1,4 @@
+- name: "install {{ packagename }}"
+  apt:
+    name: 
+      - "{{ packagename }}"

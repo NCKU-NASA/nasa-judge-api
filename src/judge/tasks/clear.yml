@@ -19,17 +19,36 @@
     state: absent
     path: "/tmp/{{ taskId }}"
   ignore_errors: true
+
+- name: Check resolv.conf bak
+  stat:
+    path: "/tmp/resolv.conf.bak"
+  register: resolvconfig
+  become: true
+
 - name: Restore resolv.conf
   copy: 
     src: "/tmp/resolv.conf.bak"
     dest: "/etc/resolv.conf"
     remote_src: true
   become: true
-  ignore_errors: true
+  when: resolvconfig.stat.exist
 
 - name: Remove /tmp/resolv.conf.bak
   file: 
     state: absent
     path: "/tmp/resolv.conf.bak"
   become: true
-  ignore_errors: true
+  when: resolvconfig.stat.exist
+    
+- name: Check ssh config bak
+  stat:
+    path: "/tmp/ssh.config.bak"
+  register: sshconfig
+
+- name: Restore ssh config
+  copy: 
+    src: "/tmp/ssh.config.bak"
+    dest: "~/.ssh/config"
+    remote_src: true
+  when: sshconfig.stat.exist

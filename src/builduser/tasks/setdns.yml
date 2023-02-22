@@ -2,14 +2,14 @@
   ansible.utils.update_fact:
     updates:
     - path: record.data
-      value: "{{ record.netmask | ansible.utils.nthhost(record.ipindex) }}"
+      value: "{{ record.netmask | nthhost(ipindex) }}"
   register: updated
-  when: "'data' not in record and 'netmask' in record and 'ipindex' in record"
+  when: "'data' not in record and 'netmask' in record"
 
 - name: Set record with netmask
   set_fact:
     nowrecord: "{{ updated.record }}"
-  when: "'data' not in record and 'netmask' in record and 'ipindex' in record"
+  when: "'data' not in record and 'netmask' in record"
 
 - name: Set record
   set_fact:

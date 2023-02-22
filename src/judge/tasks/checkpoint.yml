@@ -82,9 +82,20 @@
                 - path: "result['{{ checklist.key }}'][{{ taskindex }}]"
                   value:
                     message: "{{ checkpoints[checklist.key][taskindex].message }}"
-                    ans: "{{ return }}"
+                    ans: true
                     weight: "{{ checkpoints[checklist.key][taskindex].weight }}"
               register: updated
+          rescue:
+            - name: Update result
+              ansible.utils.update_fact: 
+                updates:
+                - path: "result['{{ checklist.key }}'][{{ taskindex }}]"
+                  value:
+                    message: "{{ checkpoints[checklist.key][taskindex].message }}"
+                    ans: false
+                    weight: "{{ checkpoints[checklist.key][taskindex].weight }}"
+              register: updated
+          always:
             - name: Set result
               set_fact:
                 result: "{{ updated.result }}"
