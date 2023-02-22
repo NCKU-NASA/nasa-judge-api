@@ -4,24 +4,24 @@ nameserver:
   host: localhost
   records:
   - host: "{%raw%}dns.{{ username }}{%endraw%}"
-    zone: nasa
+    zone: sa
     type: A
-    netmask: "10.187.100.0/24"
+    netmask: "10.187.96.0/20"
     NSIP: 10.187.10.254
   - host: "{%raw%}{{ username }}{%endraw%}"
-    zone: nasa
+    zone: sa
     type: NS
-    data: "{%raw%}dns.{{ username }}.nasa.{%endraw%}"
+    data: "{%raw%}dns.{{ username }}.sa.{%endraw%}"
     NSIP: 10.187.10.254
   - host: "{%raw%}dns.{{ username }}{%endraw%}"
-    zone: final.nasa
+    zone: final.sa
     type: A
-    netmask: "10.187.11.0/24"
+    netmask: "10.187.16.0/20"
     NSIP: 10.187.10.254
   - host: "{%raw%}{{ username }}{%endraw%}"
-    zone: final.nasa
+    zone: final.sa
     type: NS
-    data: "{%raw%}dns.{{ username }}.nasa.{%endraw%}"
+    data: "{%raw%}dns.{{ username }}.sa.{%endraw%}"
     NSIP: 10.187.10.254
 wireguard:
   host: localhost
@@ -30,39 +30,25 @@ wireguard:
     server:
       port: 7654
       ips: 
-      - 10.187.100.254/24
-      moreconfig: "MTU = 1420"
+      - 10.187.96.254/20
+      moreconfig: "MTU = 1500"
     client:
       configname: judge
       dir: judgelanclient
-      fqdn: nasa.chummydns.com
-      DNS: 10.187.100.254
-      AllowedIPs: "0.0.0.0/0"
-      moreconfig: 'PostUp = iptables -t mangle -A FORWARD -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
-
-        PostUp = bash -c 
-        "for a in \$(seq 1 1 \$(iptables-save | grep \"\\\"wg-quick(8) rule for %i\\\" -j DROP\" | sed ''s/-A/-D/g'' | wc -l)); 
-        do 
-            bash -c \"iptables -t raw \$(iptables-save | grep \"\\\"wg-quick(8) rule for %i\\\" -j DROP\" | sed ''s/-A/-D/g'' | head -n 1)\"; 
-        done"
-
-        PostDown = bash -c 
-        "for a in \$(seq 1 1 \$(sudo iptables-save | grep \"\\-A FORWARD -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu\" | wc -l)); 
-        do 
-            iptables -t mangle -D FORWARD -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu; 
-        done"
-
-        MTU = 1420'
+      fqdn: sa.chummydns.com
+      DNS: 10.187.96.254
+      AllowedIPs: "0.0.0.0/1,128.0.0.0/1"
+      moreconfig: 'MTU = 1500'
   - name: testlan
     server:
       port: 7777
       ips: 
-      - 10.187.200.254/24
-      moreconfig: "MTU = 1420"
+      - 10.187.112.254/20
+      moreconfig: "MTU = 1500"
     client:
       configname: test
       dir: testlanclient
-      fqdn: nasa.chummydns.com
-      DNS: 10.187.200.254
+      fqdn: sa.chummydns.com
+      DNS: 10.187.112.254
       AllowedIPs: "10.187.0.0/16"
-      moreconfig: "MTU = 1420"
+      moreconfig: "MTU = 1500"

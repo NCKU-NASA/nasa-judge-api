@@ -3,7 +3,7 @@
 
 - name: Get wanip
   set_fact:
-    wanip: "{{ network | nthhost(ipindex | int) }}"
+    wanip: "{{ network | ansible.utils.nthhost(ipindex | int) }}"
 
 - name: Backup resolv.conf
   copy: 
@@ -30,7 +30,7 @@
         src: "~/.ssh/config"
         dest: "/tmp/ssh.config.bak"
         remote_src: true
-      when: sshconfig.stat.exist
+      when: sshconfig.stat.exists
 
     - name: Set ssh config
       template:
@@ -55,7 +55,7 @@
         dest: "/etc/resolv.conf"
         remote_src: true
       become: true
-      when: resolvconfig.stat.exist
+      when: resolvconfig.stat.exists
 
     - name: Send script to worker
       copy:

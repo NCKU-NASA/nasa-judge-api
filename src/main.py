@@ -42,11 +42,13 @@ def help():
 
 @app.route('/stop', methods=['GET'])
 def stop():
+    global stoping
     stoping = True
     return json.dumps(len(config['workers']) >= config['maxworkerslen'] and not hostusing and len(judgingusers) == 0)
 
 @app.route('/judge',methods=['POST'])
 def judge():
+    global hostusing
     if stoping:
         return json.dumps({'alive':False})
     data = json.loads(request.get_data())
@@ -79,14 +81,16 @@ def judge():
 
     try:
         try:
-            subprocess.run(f'ansible-galaxy collection install -r judge/labs/{data["labId"]}/requirements.yml', shell=True)
-            subprocess.run(f'ansible-galaxy role install -r judge/labs/{data["labId"]}/requirements.ym', shell=True)
-            process = subprocess.run(f"ansible-playbook judge/setup.yml -e '{json.dumps(data)}'", shell=True, timeout=labdata['timeout'])
+            subprocess.run(['ansible-galaxy', 'collection', 'install', '-r', 'judge/requirements.yml'])
+            subprocess.run(['ansible-galaxy', 'role', 'install', '-r', 'judge/requirements.yml'])
+            subprocess.run(['ansible-galaxy', 'collection', 'install', '-r', f'judge/labs/{data["labId"]}/requirements.yml'])
+            subprocess.run(['ansible-galaxy', 'role', 'install', '-r', f'judge/labs/{data["labId"]}/requirements.yml'])
+            process = subprocess.run(['ansible-playbook', 'judge/setup.yml', '-e', f"'{json.dumps(data)}'"], timeout=labdata['timeout'])
             if process.returncode < 0 or process.returncode == 143 or process.returncode == 137:
                 raise Exception('bad return code')
         except:
             try:
-                subprocess.run(f"ansible-playbook judge/clearsetup.yml -e '{json.dumps(data)}'", shell=True, timeout=labdata['timeout'])
+                subprocess.run(['ansible-playbook', 'judge/clearsetup.yml', '-e', f"'{json.dumps(data)}'"], timeout=labdata['timeout'])
             except: 
                 pass
             return json.dumps({'alive':False})
@@ -170,7 +174,7 @@ def getuserdata():
     session = requests.Session()
     session.post(f"{config['judegbackendhost']}/user/login", json={'username':config['adminuser'],'password':config['adminpassword']})
     r = session.post(f"{config['judegbackendhost']}/user/userdata", json=data)
-    return r.test
+    return r.text
 
 @app.route('/getalluserdata',methods=['GET'])
 def getalluserdata():
@@ -179,7 +183,7 @@ def getalluserdata():
     session = requests.Session()
     session.post(f"{config['judegbackendhost']}/user/login", json={'username':config['adminuser'],'password':config['adminpassword']})
     r = session.get(f"{config['judegbackendhost']}/user/alluserdata")
-    return r.test
+    return r.text
 
 @app.route('/download/<string:labId>/<path:path>',methods=['GET'])
 def download(labId, path):
@@ -223,6 +227,17 @@ def userconfig():
                          "Message": "The website is not available currently"}
         return jsonify(return_result), 404
 
+@app.route('/download/pubkey',methods=['GET'])
+def pubkey():
+    if stoping:
+        return ""
+    try:
+        return '\n'.join(config['workerspubkeys'])
+    except:
+        return_result = {'code': 404, 'Success': False,
+                         "Message": "The website is not available currently"}
+        return jsonify(return_result), 404
+
 
 @app.route('/download/<string:labId>/description',methods=['GET'])
 def description(labId):
@@ -245,9 +260,9 @@ def onbuilduser():
     adduserlock.acquire()
     try:
         data = request.get_json()
-        subprocess.run(f"ansible-galaxy collection install -r builduser/requirements.yml -f", shell=True)
-        subprocess.run(f"ansible-galaxy role install -r builduser/requirements.yml -f", shell=True)
-        subprocess.run(f"ansible-playbook builduser/setup.yml -e '{json.dumps(data)}'", shell=True)
+        subprocess.run(['ansible-galaxy', 'collection', 'install', '-r', 'builduser/requirements.yml'])
+        subprocess.run(['ansible-galaxy', 'role', 'install', '-r', 'builduser/requirements.yml'])
+        subprocess.run(['ansible-playbook', 'builduser/setup.yml', '-e', f"'{json.dumps(data)}'"])
         usersetting.builduser(data)
     finally:
         adduserlock.release()

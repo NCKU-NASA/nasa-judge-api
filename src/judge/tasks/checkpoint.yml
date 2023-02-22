@@ -2,6 +2,8 @@
     - name: "Init checkpoint: {{ checklist.key }}/{{ taskindex }}"
       debug:
         msg: "Init checkpoint: {{ checklist.key }}/{{ taskindex }}"
+      failed_when: (result[checklist.key][taskindex] | length) != 0
+
     - name: Recurse checklist list
       set_fact: 
         returnchecklistlist: "{{ (returnchecklistlist | default([]))+[checklist] }}"
@@ -126,4 +128,6 @@
           set_fact:
             result: "{{ updated.result }}"
       when: not cancheck
-  when: (result[checklist.key][taskindex] | length) == 0
+  rescue:
+    - debug: 
+        msg: "Skip"

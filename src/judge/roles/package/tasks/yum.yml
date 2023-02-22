@@ -2,3 +2,4 @@
   yum:
     name:
     - "{{ packagename }}"
+  become: true

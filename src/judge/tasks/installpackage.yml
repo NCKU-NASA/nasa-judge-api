@@ -18,7 +18,7 @@
       dest: "/etc/resolv.conf"
       remote_src: true
     become: true
-    when: resolvconfig.stat.exist
+    when: resolvconfig.stat.exists
 
   - set_fact:
       retrytime: "{{ (retrytime | default(0) | int)+1 }}"

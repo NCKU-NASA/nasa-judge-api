@@ -32,14 +32,14 @@
     dest: "/etc/resolv.conf"
     remote_src: true
   become: true
-  when: resolvconfig.stat.exist
+  when: resolvconfig.stat.exists
 
 - name: Remove /tmp/resolv.conf.bak
   file: 
     state: absent
     path: "/tmp/resolv.conf.bak"
   become: true
-  when: resolvconfig.stat.exist
+  when: resolvconfig.stat.exists
     
 - name: Check ssh config bak
   stat:
@@ -51,4 +51,4 @@
     src: "/tmp/ssh.config.bak"
     dest: "~/.ssh/config"
     remote_src: true
-  when: sshconfig.stat.exist
+  when: sshconfig.stat.exists

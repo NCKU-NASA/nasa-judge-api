@@ -35,7 +35,7 @@
 
     - name: Get wanip
       set_fact:
-        wanip: "{{ network | nthhost(ipindex | int) }}"
+        wanip: "{{ network | ansible.utils.nthhost(ipindex | int) }}"
 
     - name: include clear task
       include: tasks/clear.yml
