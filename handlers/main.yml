@@ -1,0 +1,23 @@
+- name: Start wireguard VPN
+  systemd: 
+    name: "wg-quick@{{ item.name }}"
+    state: started
+    enabled: true
+  become: true
+  with_items: "{{ wireguard.tunnels }}"
+  delegate_to: "{{ wireguard.host }}"
+
+- name: Restart named
+  systemd: 
+    name: named
+    state: restarted
+  become: true
+  delegate_to: "{{ nameserver.host }}"
+
+- name: Start judge
+  systemd: 
+    name: nasajudgeapi
+    enabled: true
+    daemon_reload: true
+    state: started
+  become: true

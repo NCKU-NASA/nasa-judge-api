@@ -1,0 +1,12 @@
+- block:
+  - name: Generate VPN server
+    import_role:
+      name: VpnGenerator/roles/addwgserver
+    vars:
+      servername: "{{ tunnel.name }}"
+      addresses: "{{ tunnel.server.ips | join(',') }}"
+      serverport: "{{ tunnel.server.port }}"
+      moreconfig: "{{ tunnel.server.moreconfig }}"
+    delegate_to: "{{ wireguard.host }}"
+  ignore_errors: true
+

@@ -1,0 +1,9 @@
+- name: Set value var
+  set_fact: "{{ nowdata.name }}={{ nowdata.data }}"
+  when: nowdata.type == "value"
+
+- name: Set file
+  copy:
+    content: "{{ nowdata.data | b64decode }}"
+    dest: "/tmp/{{ taskId }}/workspace/{{ nowdata.name }}"
+  when: nowdata.type == "file"

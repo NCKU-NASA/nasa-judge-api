@@ -1,0 +1,15 @@
+[Unit]
+Description=Start NASA Judge API Service
+After=network.target
+
+[Service]
+User=nasa
+Group=nasa
+WorkingDirectory={{ nasajudgeapidir }}
+ExecStart=/usr/local/bin/nasajudgeapi start
+ExecStop=/usr/local/bin/nasajudgeapi stop $MAINPID
+TimeoutStopSec=1000
+
+
+[Install]
+WantedBy=multi-user.target
