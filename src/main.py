@@ -268,6 +268,20 @@ def onbuilduser():
         adduserlock.release()
     return "true"
 
+@app.route('/changename',methods=['POST'])
+def onchangename():
+    if stoping:
+        return ""
+    adduserlock.acquire()
+    try:
+        data = request.get_json()
+        subprocess.run(['ansible-galaxy', 'collection', 'install', '-r', 'changename/requirements.yml'])
+        subprocess.run(['ansible-galaxy', 'role', 'install', '-r', 'changename/requirements.yml'])
+        subprocess.run(['ansible-playbook', 'changename/setup.yml', '-e', json.dumps(data)])
+    finally:
+        adduserlock.release()
+    return "true"
+
 @app.route('/getresult',methods=['POST'])
 def getresult():
     if stoping:

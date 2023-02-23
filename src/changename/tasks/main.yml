@@ -1,0 +1,21 @@
+- name: Set dns data
+  set_fact:
+    dnsdata: "{{ nameserver }}"
+
+- name: Add VPN user
+  include_tasks: setvpn.yml
+  loop: "{{ wireguard.tunnels }}"
+  loop_control:
+    loop_var: tunnel
+
+- name: Set nameserver
+  set_fact:
+    nameserver: "{{ dnsdata }}"
+
+- name: Set DNS record
+  include_tasks: setdns.yml
+  loop: "{{ nameserver.records }}"
+  loop_control:
+    loop_var: record
+
+
