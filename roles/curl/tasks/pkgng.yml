@@ -3,3 +3,4 @@
   with_items: 
       - "{{ role_name }}"
 
+  become: true

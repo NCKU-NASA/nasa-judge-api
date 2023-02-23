@@ -2,3 +2,4 @@
   apt:
     name: 
       - "{{ role_name }}"
+  become: true

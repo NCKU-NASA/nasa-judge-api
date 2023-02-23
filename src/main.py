@@ -299,7 +299,7 @@ def getresult():
         if a['labId'] not in allscore:
             allscore[a['labId']] = {}
 
-        if data.get('max', False):
+        if not data.get('max', True):
             if a['username'] not in allscore[a['labId']]:
                 allscore[a['labId']][a['username']] = []
             allscore[a['labId']][a['username']].append(nowdata)
