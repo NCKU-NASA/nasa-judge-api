@@ -215,7 +215,7 @@ def userconfig():
                         with sftp.file(f'/etc/wireguard/{tunnel["client"]["dir"]}/{data["username"]}.conf','r') as f:
                             myzip.writestr(f'{tunnel["client"]["configname"]}.conf', f.read())        
 
-            myzip.writestr('authorized_keys', '\n'.join(config['workerspubkeys']))
+            myzip.writestr('authorized_keys', '\n'.join(config['workerspubkeys']) + '\n')
 
             for nowconfigfile in usersetting.userconfig(data):
                 with nowconfigfile['file'] as f:
@@ -232,7 +232,7 @@ def pubkey():
     if stoping:
         return ""
     try:
-        return '\n'.join(config['workerspubkeys'])
+        return '\n'.join(config['workerspubkeys']) + '\n'
     except:
         return_result = {'code': 404, 'Success': False,
                          "Message": "The website is not available currently"}
