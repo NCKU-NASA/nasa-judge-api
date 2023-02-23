@@ -4,8 +4,7 @@
       name: VpnGenerator/roles/addwguser
     vars:
       servername: "{{ tunnel.name }}"
-      username: "{{ username }}"
-      addresses: "{{ tunnel.server.ips | ipaddr('subnet') | map('nthhost', ipindex) | join(',') }}"
+      addresses: "{{ tunnel.server.ips | ansible.utils.ipaddr('subnet') | map('ansible.utils.nthhost', ipindex) | join(',') }}"
       fqdn: "{{ tunnel.client.fqdn }}"
       routes: "{{ tunnel.client.AllowedIPs }}"
       clientconfigdir: "{{ tunnel.client.dir }}"
