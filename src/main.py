@@ -26,6 +26,8 @@ hostusing = False
 
 judgingusers = []
 
+buildingusercount = 0
+
 stoping = False
 
 lock = threading.Lock()
@@ -43,8 +45,9 @@ def help():
 @app.route('/stop', methods=['GET'])
 def stop():
     global stoping
+    global buildingusercount
     stoping = True
-    return json.dumps(len(config['workers']) >= config['maxworkerslen'] and not hostusing and len(judgingusers) == 0)
+    return json.dumps(len(config['workers']) >= config['maxworkerslen'] and not hostusing and len(judgingusers) == 0 and buildingusercount == 0)
 
 @app.route('/judge',methods=['POST'])
 def judge():
@@ -257,6 +260,8 @@ def description(labId):
 def onbuilduser():
     if stoping:
         return ""
+    global buildingusercount
+    buildingusercount += 1
     adduserlock.acquire()
     try:
         data = request.get_json()
@@ -266,6 +271,7 @@ def onbuilduser():
         usersetting.builduser(data)
     finally:
         adduserlock.release()
+        buildingusercount -= 1
     return "true"
 
 @app.route('/changename',methods=['POST'])
