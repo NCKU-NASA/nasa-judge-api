@@ -11,7 +11,7 @@ app = flask.Blueprint('status', __name__)
 @app.route('/', methods=['GET'])
 def help():
     return """
-Usage: <host>/status/<api>
+Usage: curl <host>/status/<api> -H 'Content-Type: application/json'
 
 GET:
     stop                        Run stop and wait until result become true before stop this service.

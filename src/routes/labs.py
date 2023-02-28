@@ -12,7 +12,7 @@ app = flask.Blueprint('labs', __name__)
 @app.route('/', methods=['GET'])
 def help():
     return """
-Usage: <host>/labs/<api>
+Usage: curl <host>/labs/<api> -H 'Content-Type: application/json'
 
 GET:
     getdata                     Get all of labs info.

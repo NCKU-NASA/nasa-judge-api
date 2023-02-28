@@ -17,7 +17,7 @@ app.register_blueprint(routes.score.app, url_prefix='/score')
 @app.route('/', methods=['GET'])
 def help():
     return """
-Usage: <host>/<api>
+Usage: curl <host>/<api> -H 'Content-Type: application/json'
 
 GET:
     pubkey                      Download ssh public key that is documented in the workerspubkeys in config.yaml.

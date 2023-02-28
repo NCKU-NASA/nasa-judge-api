@@ -17,7 +17,7 @@ app = flask.Blueprint('score', __name__)
 @app.route('/', methods=['GET'])
 def help():
     return """
-Usage: <host>/score/<api>
+Usage: curl <host>/score/<api> -H 'Content-Type: application/json'
 
 POST:
     get                         Get score and result from backend.

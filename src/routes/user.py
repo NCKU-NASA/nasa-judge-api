@@ -22,7 +22,7 @@ adduserlock = threading.Lock()
 @app.route('/', methods=['GET'])
 def help():
     return """
-Usage: <host>/user/<api>
+Usage: curl <host>/user/<api> -H 'Content-Type: application/json'
 
 GET:
     getdata                     Get all user data from backend.
