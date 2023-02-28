@@ -32,7 +32,7 @@ then
     else
         proto="http://"
     fi
-    while [ "$(curl $proto$(yq e '.ListenHost' config.yaml):$(yq e '.ListenPort' config.yaml)/stop)" == "false" ]
+    while [ "$(curl $proto$(yq e '.ListenHost' config.yaml):$(yq e '.ListenPort' config.yaml)/status/stop)" == "false" ]
     do
         sleep 1
     done
