@@ -23,7 +23,7 @@ cd nasa-judge-api
 bash install.sh
 ```
 
-4. Set `/etc/nasajudgeapi/config.yaml` for install
+4. Set `/etc/nasajudgeapi/config.yaml`
 
 5. Start it with systemd.
 ``` bash
