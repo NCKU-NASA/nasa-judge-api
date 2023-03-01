@@ -60,7 +60,7 @@ routes:
     score                       Show score or judge.
 ```
 
-## How to write a Lab check code1
+## How to write a Lab check code
 cd into `/etc/nasajudgeapi/judge/labs` and make labId dir.
 
 ```bash
