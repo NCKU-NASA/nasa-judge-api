@@ -5,6 +5,8 @@ NCKU NASA judge api service
 - [Remove](#Remove)
 - [Api](#Api)
 - [How to write a Lab check code](#how-to-write-a-lab-check-code)
+  - [script mode](#script-mode)
+  - [ansible mode](#ansible-mode)
 ## Install
 1. clone this repo and cd into nasa-judge-api.
 
