@@ -11,7 +11,7 @@
   when: not ansiblejudgescript
 
 - name: Run clear (ansible)
-  include_tasks: "labs/{{ labId }}/clear.yml"
+  include_tasks: "labs/{{ labId }}/{{ clear.scriptname | default('clear') }}.yml"
   when: ansiblejudgescript
 
 - name: Remove script on worker

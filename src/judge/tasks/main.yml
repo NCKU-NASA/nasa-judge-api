@@ -102,7 +102,7 @@
       when: not ansiblejudgescript
 
     - name: Run init (ansible)
-      include_tasks: "labs/{{ labId }}/init.yml"
+      include_tasks: "labs/{{ labId }}/{{ init.scriptname | default('init') }}.yml"
       when: ansiblejudgescript
 
     - name: Generate check list
