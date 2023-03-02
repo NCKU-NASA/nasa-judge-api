@@ -81,7 +81,7 @@ deadlines:     # Set your deadlines and the score scale before deadline.
 - time: "2023-03-09 23:59:59"
   score: 1
 checkonhost: false         # use worker or host
-workerusedocker: false     # worker using docker? (TODO)
+workerusedocker: false     # worker using docker?
 ansiblejudgescript: false  # for "script mode" please set "false"
 timeout: 120               # judge timeout
 network: 10.100.100.0/24   # network for student machine 
@@ -93,6 +93,8 @@ package:                   # package for judge on worker
 - sshpass
 - wget
   
+dockerargs: {}             # docker run option (see https://docker-py.readthedocs.io/en/stable/containers.html#docker.models.containers.ContainerCollection.run)
+
 description: "description.pdf"  # description path
 
 init: 
@@ -130,7 +132,9 @@ frontendvariable:                   # variable for frontend
   name: <filename(no space)>        # file will save at workdir. use it with name (cat <filename(no space)>)
 ```
 
-2. For judge script, on check fail please return with `return code 1`, on check success please return with `return code 0`. Show output and error at `stdout` and `stderr`
+2. If workerusedocker true, write your Dockerfile at lab dir.
+
+3. For judge script, on check fail please return with `return code 1`, on check success please return with `return code 0`. Show output and error at `stdout` and `stderr`
 ``` bash
 #!/bin/bash
 
@@ -158,12 +162,13 @@ fi
 shellreturn 0
 ```
 
-3. This is dir tree
+4. This is dir tree
 ```
 .
 ├── clear.sh
 ├── config.yaml
 ├── description.pdf
+├── Dockerfile
 ├── <group1>
 │   ├── 0.sh
 │   └── 1.sh
@@ -181,7 +186,7 @@ deadlines:     # Set your deadlines and the score scale before deadline.
 - time: "2023-03-09 23:59:59"
   score: 1
 checkonhost: false         # use worker or host
-workerusedocker: false     # worker using docker? (TODO)
+workerusedocker: false     # worker using docker?
 ansiblejudgescript: true   # for "ansible mode" please set "true"
 timeout: 300               # judge timeout
 network: 10.187.96.0/20    # network for student machine 
@@ -193,6 +198,8 @@ package:                   # package for judge on worker
 - sshpass
 - wget
 - ansible
+
+dockerargs: {}             # docker run option (see https://docker-py.readthedocs.io/en/stable/containers.html#docker.models.containers.ContainerCollection.run)
   
 description: "description.pdf"  # description path
 
@@ -223,7 +230,9 @@ frontendvariable:                   # variable for frontend
   name: <filename(no space)>        # file will save at "/tmp/{{ taskId }}/workspace/<filename(no space)>" at worker(remote).
 ```
 
-2. Write requirements.yml for install rule in judge
+2. If workerusedocker true, write your Dockerfile at lab dir.
+
+3. Write requirements.yml for install rule in judge
 ``` yaml
 collections:
   - name: ansible.netcommon
@@ -231,7 +240,7 @@ collections:
 roles: []
 ```
 
-3. For judge script, on check fail please `fail this judge task`, on check success please `don't fail this judge task`. Save output at `/tmp/{{ taskId }}/stdout`. Save error at `/tmp/{{ taskId }}/stderr` 
+4. For judge script, on check fail please `fail this judge task`, on check success please `don't fail this judge task`. Save output at `/tmp/{{ taskId }}/stdout`. Save error at `/tmp/{{ taskId }}/stderr` 
 ``` yaml
 - name: Ping Test
   command: "ping {{ wanip }} -c 1 -w 1"
@@ -254,12 +263,13 @@ roles: []
   failed_when: pingresult is failed
 ```
 
-4. This is dir tree
+5. This is dir tree
 ```
 .
 ├── clear.yml
 ├── config.yaml
 ├── description.pdf
+├── Dockerfile
 ├── <group1>
 │   ├── 0.yml
 │   └── 1.yml

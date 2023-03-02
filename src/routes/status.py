@@ -22,6 +22,8 @@ GET:
                                 return: bool
     workerlist                  Get all of workers which is idle.
                                 return: list
+    showjudgingusers            Get all judgingusers.
+                                return: list
 """
 
 @app.route('/stop', methods=['GET'])
@@ -42,6 +44,11 @@ def alive():
 @app.route('/workerlist',methods=['GET'])
 def serverlist():
     return json.dumps(conf.config['workers'])
+
+@app.route('/showjudgingusers',methods=['GET'])
+def showjudgingusers():
+    return json.dumps(conf.judgingusers)
+
 @app.errorhandler(404)
 def page_not_found(e):
     return_result = {'code': 404, 'Success': False,

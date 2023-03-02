@@ -11,6 +11,7 @@
     - jq
     - bind9
     - andrewrothstein.yq
+    - geerlingguy.docker
 
   tasks:
     - name: include main task

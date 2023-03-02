@@ -17,7 +17,17 @@
       add_host:
         name: "{{ workerhost }}"
         groups: workers
-      changed_when: false
+      when: not workerusedocker
+    
+    - name: Set worker(docker)
+      add_host:
+        name: "{{ workerhost }}"
+        groups: workers
+        ansible_connection: docker
+        ansible_ssh_user: "root"
+        ansible_become_user: "root"
+        ansible_become: "yes"
+      when: workerusedocker
   
   handlers: []
 

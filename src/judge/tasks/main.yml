@@ -38,10 +38,9 @@
         dest: "~/.ssh/config"
 
     - name: Install package
-      include_tasks: installpackage.yml
-      loop: "{{ package }}"
-      loop_control:
-        loop_var: nowpackage
+      package:
+        name: "{{ package }}"
+      become: true
 
     - name: Check resolv.conf bak
       stat:
