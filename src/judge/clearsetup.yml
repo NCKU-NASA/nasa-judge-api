@@ -7,24 +7,65 @@
   tasks:
     - name: Set lab vars
       include_vars: "labs/{{ labId }}/config.yaml"
-
+    
+    - set_fact:
+        newpython: "{{ ansible_python_interpreter }}"
+        ansible_python_interpreter: "{{ ansible_python.executable }}"
+      when: ansible_python.executable != ansible_python_interpreter and not workerusedocker and not checkonhost
+  
     - name: Check is on host
       set_fact:
         workerhost: localhost
       when: checkonhost and not workerusedocker
 
-    - name: Set worker
-      add_host:
-        name: "{{ workerhost }}"
-        groups: workers
-      when: not workerusedocker and not checkonhost and ansible_python_interpreter is undefined
+    - name: worker connect test
+      command: "ssh {{ workerhost }} whoami"
+      ignore_errors: true
+      register: connecttest
+      when: not workerusedocker and not checkonhost
+
+    - block:
+      - name: set no forward
+        raw: "ipset del noforward {{ workerhost }}"
+        become: true
+        ignore_errors: true
+        when: (noforward | default(false)) and not workerusedocker and not checkonhost
+
+      - name: clear taskpath
+        set_fact:
+          taskpath: ""
+          scriptname: "clear"
+
+      - name: clear taskpath
+        set_fact:
+          taskpath: ""
+          scriptname: "{{ clear.scriptname | default('clear') }}"
+
+      - name: Run clear (script)
+        command: 
+          cmd: "{{ clear.command }}"
+          chdir: "labs/{{ taskId }}"
+        become: "{{ clear.become | default(false) }}"
+        ignore_errors: true
+        when: not (clear.useansible | default(ansiblejudgescript))
+
+      - name: Run clear (ansible)
+        include_tasks: "labs/{{ labId }}/{{ clear.scriptname | default('clear') }}.yml"
+        when: (clear.useansible | default(ansiblejudgescript))
+      when: (clear.runlocalwhenerror | default(false)) and connecttest is failed
 
     - name: Set worker
       add_host:
         name: "{{ workerhost }}"
         groups: workers
-        ansible_python_interpreter: "{{ ansible_python_interpreter }}"
-      when: not workerusedocker and not checkonhost and ansible_python_interpreter is defined
+      when: not workerusedocker and not checkonhost and newpython is undefined
+
+    - name: Set worker
+      add_host:
+        name: "{{ workerhost }}"
+        groups: workers
+        ansible_python_interpreter: "{{ newpython }}"
+      when: not workerusedocker and not checkonhost and newpython is defined
     
     - name: Set worker(docker)
       add_host:
@@ -34,7 +75,7 @@
         ansible_ssh_user: "root"
         ansible_become_user: "root"
         ansible_become: "yes"
-      when: workerusedocker and not checkonhost and ansible_python_interpreter is undefined
+      when: workerusedocker and not checkonhost and newpython is undefined
 
     - name: Set worker(docker)
       add_host:
@@ -44,14 +85,9 @@
         ansible_ssh_user: "root"
         ansible_become_user: "root"
         ansible_become: "yes"
-        ansible_python_interpreter: "{{ ansible_python_interpreter }}"
-      when: workerusedocker and not checkonhost and ansible_python_interpreter is defined
+        ansible_python_interpreter: "{{ newpython }}"
+      when: workerusedocker and not checkonhost and newpython is defined
 
-    - set_fact:
-        newpython: "{{ ansible_python_interpreter }}"
-        ansible_python_interpreter: "{{ ansible_python.executable }}"
-      when: ansible_python.executable != ansible_python_interpreter and not workerusedocker and not checkonhost
-  
   handlers: []
 
 

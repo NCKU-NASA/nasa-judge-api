@@ -7,6 +7,11 @@
   tasks:
     - name: Set lab vars
       include_vars: "labs/{{ labId }}/config.yaml"
+    
+    - set_fact:
+        newpython: "{{ ansible_python_interpreter }}"
+        ansible_python_interpreter: "{{ ansible_python.executable }}"
+      when: ansible_python.executable != ansible_python_interpreter and not workerusedocker and not checkonhost
 
     - name: Check is on host
       set_fact:
@@ -27,7 +32,7 @@
         ansible_ssh_user: "root"
         ansible_become_user: "root"
         ansible_become: "yes"
-      when: workerusedocker and not checkonhost and ansible_python_interpreter is undefined
+      when: workerusedocker and not checkonhost and newpython is undefined
 
     - name: Set worker(docker)
       add_host:
@@ -37,13 +42,8 @@
         ansible_ssh_user: "root"
         ansible_become_user: "root"
         ansible_become: "yes"
-        ansible_python_interpreter: "{{ ansible_python_interpreter }}"
-      when: workerusedocker and not checkonhost and ansible_python_interpreter is defined
-
-    - set_fact:
-        newpython: "{{ ansible_python_interpreter }}"
-        ansible_python_interpreter: "{{ ansible_python.executable }}"
-      when: ansible_python.executable != ansible_python_interpreter and not workerusedocker and not checkonhost
+        ansible_python_interpreter: "{{ newpython }}"
+      when: workerusedocker and not checkonhost and newpython is defined
 
     - name: is new python
       copy:

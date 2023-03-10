@@ -130,7 +130,7 @@ def judge():
                     subprocess.run(['ansible-galaxy', 'collection', 'install', '-r', f'judge/labs/{data["labId"]}/requirements.yml'])
                     subprocess.run(['ansible-galaxy', 'role', 'install', '-r', f'judge/labs/{data["labId"]}/requirements.yml'])
                 process = subprocess.run(['ansible-playbook', 'judge/setup.yml', '-e', json.dumps(data)], timeout=labdata['timeout'])
-                if process.returncode < 0 or process.returncode == 143 or process.returncode == 137:
+                if process.returncode != 0:
                     raise Exception('bad return code')
             except:
                 try:
