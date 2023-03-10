@@ -1,6 +1,18 @@
+- name: set no forward
+  raw: "ipset del noforward {{ workerhost }}"
+  become: true
+  when: (noforward | default(false)) and not workerusedocker and not checkonhost
+  delegate_to: localhost
+
 - name: clear taskpath
   set_fact:
-    taskpath: "../{{ clear.scriptname | default('clear') }}"
+    taskpath: "../"
+    scriptname: "clear"
+
+- name: clear taskpath
+  set_fact:
+    taskpath: "../"
+    scriptname: "{{ clear.scriptname | default('clear') }}"
 
 - name: Run clear (script)
   command: 
@@ -8,23 +20,25 @@
     chdir: "/tmp/{{ taskId }}/workspace"
   become: "{{ clear.become | default(false) }}"
   ignore_errors: true
-  when: not ansiblejudgescript
+  when: not (clear.useansible | default(ansiblejudgescript))
 
 - name: Run clear (ansible)
   include_tasks: "labs/{{ labId }}/{{ clear.scriptname | default('clear') }}.yml"
-  when: ansiblejudgescript
+  when: (clear.useansible | default(ansiblejudgescript))
 
 - name: Remove script on worker
   file: 
     state: absent
     path: "/tmp/{{ taskId }}"
   ignore_errors: true
+  when: not (clear.fullclear | default(false))
 
 - name: Check resolv.conf bak
   stat:
     path: "/tmp/resolv.conf.bak"
   register: resolvconfig
   become: true
+  when: not (clear.fullclear | default(false))
 
 - name: Restore resolv.conf
   copy: 
@@ -32,23 +46,51 @@
     dest: "/etc/resolv.conf"
     remote_src: true
   become: true
-  when: resolvconfig.stat.exists
+  when: (clear.fullclear | default(false)) and resolvconfig.stat.exists
 
 - name: Remove /tmp/resolv.conf.bak
   file: 
     state: absent
     path: "/tmp/resolv.conf.bak"
   become: true
-  when: resolvconfig.stat.exists
+  when: (clear.fullclear | default(false)) and resolvconfig.stat.exists
     
 - name: Check ssh config bak
   stat:
     path: "/tmp/ssh.config.bak"
   register: sshconfig
+  when: not (clear.fullclear | default(false))
 
 - name: Restore ssh config
   copy: 
     src: "/tmp/ssh.config.bak"
     dest: "~/.ssh/config"
     remote_src: true
-  when: sshconfig.stat.exists
+  when: (clear.fullclear | default(false)) and sshconfig.stat.exists
+
+- name: get old python path
+  slurp:
+    src: "/tmp/pythonbackupdata"
+  register: oldpython
+  when: not (clear.fullclear | default(false))
+
+- name: check oldpython exist
+  stat:
+    path: "{{ oldpython.content | b64decode }}"
+  register: oldpythonexist
+  when: not (clear.fullclear | default(false))
+    
+- name: copy python
+  copy:
+    src: "{{ ansible_python_interpreter }}"
+    dest: "{{ oldpython.content | b64decode }}"
+    mode: '0755'
+    remote_src: true
+  become: true
+  when: (clear.fullclear | default(false)) and ansible_python_interpreter is defined and not oldpythonexist.stat.exists
+
+- name: remove new python
+  raw: "rm {{ ansible_python_interpreter }}"
+  become: true
+  when: (clear.fullclear | default(false)) and ansible_python_interpreter is defined and not oldpythonexist.stat.exists
+

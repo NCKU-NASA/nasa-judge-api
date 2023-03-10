@@ -1,5 +1,41 @@
+- name: check newpythonpath exist
+  stat:
+    path: "/tmp/newpythonpath"
+  register: newpythonpathexist
+
+- name: read /tmp/newpythonpath
+  slurp:
+    src: "/tmp/newpythonpath"
+  register: newpython
+  when: newpythonpathexist.stat.exists
+
+- name: check newpython exist
+  stat:
+    path: "{{ newpython.content | b64decode }}"
+  register: pythonexist
+  when: newpythonpathexist.stat.exists
+
+- name: copy python
+  copy:
+    src: "{{ ansible_python.executable }}"
+    dest: "{{ newpython.content | b64decode }}"
+    mode: '0755'
+    remote_src: true
+  become: true
+  when: newpythonpathexist.stat.exists and ansible_python.executable != newpython and not pythonexist.stat.exists
+
+- name: save python
+  copy:
+    content: "{{ ansible_python.executable }}"
+    dest: "/tmp/pythonbackupdata"
+
 - name: Set lab vars
   include_vars: "labs/{{ labId }}/config.yaml"
+
+- name: remove old python
+  raw: "rm {{ ansible_python.executable }}"
+  become: true
+  when: newpythonpathexist.stat.exists and ansible_python_interpreter != ansible_python.executable and not pythonexist.stat.exists
 
 - name: Get wanip
   set_fact:
@@ -84,26 +120,38 @@
         path: "/tmp/{{ taskId }}"
         state: directory
       delegate_to: localhost
-
+    
     - name: taskpath
       set_fact:
         taskpath: ""
 
     - name: init taskpath
       set_fact:
-        taskpath: "../{{ init.scriptname | default('init') }}"
+        taskpath: "../"
+        scriptname: "init"
+    
+    - name: init taskpath
+      set_fact:
+        taskpath: "../"
+        scriptname: "{{ init.scriptname | default('init') }}"
 
     - name: Run init (script)
       command: 
         cmd: "{{ init.command }}"
         chdir: "/tmp/{{ taskId }}/workspace"
       become: "{{ init.become | default(false) }}"
-      when: not ansiblejudgescript
+      when: not (init.useansible | default(ansiblejudgescript))
 
     - name: Run init (ansible)
       include_tasks: "labs/{{ labId }}/{{ init.scriptname | default('init') }}.yml"
-      when: ansiblejudgescript
+      when: (init.useansible | default(ansiblejudgescript))
 
+    - name: set no forward
+      command: "ipset add noforward {{ workerhost }}"
+      become: true
+      when: (noforward | default(false)) and not workerusedocker and not checkonhost
+      delegate_to: localhost
+    
     - name: Generate check list
       set_fact:
         checklistdict: "{{ checklistdict | default({}) | combine({ item:(range(checkpoints[item] | length) | list) }) }}"
@@ -120,6 +168,15 @@
         content: "{{ result | to_json }}"
         dest: "/tmp/{{ taskId }}/result"
       delegate_to: localhost
+    
+    - name: get output and error
+      fetch:
+        src: "/tmp/{{ taskId }}/{{ item }}"
+        dest: "/tmp/{{ taskId }}/{{ item }}"
+        flat: yes
+      with_items:
+      - stdout
+      - stderr
 
   always:
     - name: include clear task

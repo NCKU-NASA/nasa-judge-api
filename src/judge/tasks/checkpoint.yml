@@ -42,7 +42,13 @@
         - block:
             - name: "Set taskpath"
               set_fact:
-                taskpath: "../{{ checklist.key }}/{{ checkpoints[checklist.key][taskindex].scriptname | default(taskindex) }}"
+                taskpath: "../{{ checklist.key }}/"
+                scriptname: "{{ taskindex }}"
+
+            - name: "Set taskpath"
+              set_fact:
+                taskpath: "../{{ checklist.key }}/"
+                scriptname: "{{ checkpoints[checklist.key][taskindex].scriptname | default(taskindex) }}"
 
             - name: "Run checkpoint: {{ checklist.key }}/{{ taskindex }} (script)"
               command:
@@ -57,7 +63,6 @@
                 block: "{% if scriptresult[item] != '' %}{{ scriptresult[item] | default(' ') }}{% else %} {% endif %}"
                 marker: "# {mark} {{ checklist.key }}/{{ taskindex }}"
                 create: true
-              delegate_to: localhost
               with_items:
                 - stdout
                 - stderr
@@ -73,7 +78,7 @@
             - name: Set result
               set_fact:
                 result: "{{ updated.result }}"
-          when: not ansiblejudgescript
+          when: not (checkpoints[checklist.key][taskindex].useansible | default(ansiblejudgescript))
 
         - block:
             - name: "Run checkpoint: {{ checklist.key }}/{{ taskindex }} (ansible)"
@@ -101,7 +106,7 @@
             - name: Set result
               set_fact:
                 result: "{{ updated.result }}"
-          when: ansiblejudgescript
+          when: (checkpoints[checklist.key][taskindex].useansible | default(ansiblejudgescript))
       when: cancheck
 
     - block:
@@ -111,7 +116,6 @@
             block: " "
             marker: "# {mark} {{ checklist.key }}/{{ taskindex }}"
             create: true
-          delegate_to: localhost
           with_items:
             - stdout
             - stderr

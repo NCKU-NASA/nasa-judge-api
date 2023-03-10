@@ -62,7 +62,7 @@ def getresult():
     result_set = json.loads(r.text)
     allscore = {}
     for a in result_set:
-        nowdata = {'score':a['score']}
+        nowdata = {'score':a['score'],'createAt':a['createAt']}
         if data.get('showresult', False):
             nowdata['result'] = a['result']
         if a['labId'] not in allscore:
@@ -106,25 +106,27 @@ def judge():
                 with open(os.path.join(os.path.expanduser('~'), '.ssh/id_rsa'), 'r') as f:
                     sshkey = f.read()
                 client.images.build(path=f'judge/labs/{data["labId"]}', tag=data["labId"].lower(), buildargs={'ssh_prv_key':sshkey}, nocache=True)
-            dockerargs = {'image':data["labId"].lower(), 'hostname':data['taskId'].lower(), 'name':data['taskId'].lower(), 'stdin_open':True, 'detach':True)
+            dockerargs = {'image':data["labId"].lower(), 'hostname':data['taskId'].lower(), 'name':data['taskId'].lower(), 'stdin_open':True, 'detach':True}
             if 'dockerargs' in labdata:
                 for a in labdata['dockerargs']:
                     dockerargs[a] = labdata['dockerargs'][a]
             dockerworker = client.containers.run(**dockerargs)
             data['workerhost'] = data['taskId']
         else:
-            while len(conf.config['workers']) <= 0:
+            if 'workergroup' not in labdata:
+                labdata['workergroup'] = 'default'
+            while len(conf.config['workers'][labdata['workergroup']]) <= 0:
                 lock.release()
                 time.sleep(0.1)
                 lock.acquire()
-            data['workerhost'] = conf.config['workers'].pop(0)
+            data['workerhost'] = conf.config['workers'][labdata['workergroup']].pop(0)
         lock.release()
 
         try:
             try:
                 subprocess.run(['ansible-galaxy', 'collection', 'install', '-r', 'judge/requirements.yml'])
                 subprocess.run(['ansible-galaxy', 'role', 'install', '-r', 'judge/requirements.yml'])
-                if labdata['ansiblejudgescript']:
+                if os.path.isfile(f'judge/labs/{data["labId"]}/requirements.yml'):
                     subprocess.run(['ansible-galaxy', 'collection', 'install', '-r', f'judge/labs/{data["labId"]}/requirements.yml'])
                     subprocess.run(['ansible-galaxy', 'role', 'install', '-r', f'judge/labs/{data["labId"]}/requirements.yml'])
                 process = subprocess.run(['ansible-playbook', 'judge/setup.yml', '-e', json.dumps(data)], timeout=labdata['timeout'])
@@ -162,7 +164,7 @@ def judge():
                 dockerworker.stop()
                 dockerworker.remove(force=True)
             else:
-                conf.config['workers'].append(data['workerhost'])
+                conf.config['workers'][labdata['workergroup']].append(data['workerhost'])
             lock.release()
     finally:
         lock.acquire()
