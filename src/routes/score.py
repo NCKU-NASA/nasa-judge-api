@@ -28,9 +28,15 @@ POST:
                                     json:
                                         labId: labId you want to search
                                         username: username you want to search
+                                        studentId: studentId you want to search
+                                        score: score you want to search
                                         usedeadline: calc deadline score
                                         showresult: show all result
                                         max: show max score only
+                                        groups: filter role for groups
+                                            In element:
+                                                name: group name
+                                                show: show this score when user in this group
                                 return: json
     canjudge                    Check is user can judge?
                                 input:
@@ -58,24 +64,10 @@ def getresult():
     if conf.stoping:
         return json.dumps(None)
     data = flask.request.get_json()
-    r = backend.post("score", json=data)
-    result_set = json.loads(r.text)
-    allscore = {}
-    for a in result_set:
-        nowdata = {'score':a['score'],'createAt':a['createAt']}
-        if data.get('showresult', False):
-            nowdata['result'] = a['result']
-        if a['labId'] not in allscore:
-            allscore[a['labId']] = {}
-
-        if not data.get('max', True):
-            if a['username'] not in allscore[a['labId']]:
-                allscore[a['labId']][a['username']] = []
-            allscore[a['labId']][a['username']].append(nowdata)
-        else:
-            if a['username'] not in allscore[a['labId']] or allscore[a['labId']][a['username']]['score'] < a['score']:
-                allscore[a['labId']][a['username']] = nowdata
-    return json.dumps(allscore)
+    if 'groups' in data:
+        data['groups'] = json.dumps(data['groups'])
+    r = backend.get("score", params=data)
+    return r.text
 
 
 @app.route('/judge',methods=['POST'])

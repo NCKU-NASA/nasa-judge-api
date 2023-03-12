@@ -55,7 +55,9 @@ def getLab(labId):
             labconfig['frontendvariable'] = []
         if 'deadlines' not in labconfig:
             labconfig['deadlines'] = []
-        result = {'id':labId, 'contents':labconfig['frontendvariable'], 'promissions':labconfig['promissions'], 'deadlines':labconfig['deadlines']}
+        if 'checkpoints' not in labconfig:
+            labconfig['checkpoints'] = {}
+        result = {'id':labId, 'contents':labconfig['frontendvariable'], 'checkpoints':labconfig['checkpoints'], 'promissions':labconfig['promissions'], 'deadlines':labconfig['deadlines']}
     return json.dumps(result)
 
 @app.route('/<string:labId>/file/<path:path>',methods=['GET'])
