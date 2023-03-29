@@ -34,6 +34,7 @@ def stop():
 @app.route('/start', methods=['GET'])
 def start():
     conf.stoping = False
+    return "true"
 
 @app.route('/alive',methods=['GET'])
 def alive():
