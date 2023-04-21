@@ -32,6 +32,7 @@ POST:
                                         score: score you want to search
                                         usedeadline: calc deadline score
                                         showresult: show all result
+                                        showkeyisstudentId: use studentId for key on show
                                         max: show max score only
                                         groups: filter role for groups
                                             In element:
