@@ -96,6 +96,11 @@
       copy:
         src: "labs/{{ labId }}/"
         dest: "/tmp/{{ taskId }}/"
+    
+    - name: Send remote script to worker
+      copy:
+        src: "remote.yml"
+        dest: "/tmp/{{ taskId }}/remote.yml"
 
     - name: Make workspace
       file: 
@@ -121,6 +126,14 @@
         state: directory
       delegate_to: localhost
     
+    - name: Install ansible-galaxy
+      command: "ansible-galaxy collection install -r /tmp/{{ taskId }}/requirements.yml"
+      ignore_errors: true
+    
+    - name: Install ansible-galaxy
+      command: "ansible-galaxy role install -r /tmp/{{ taskId }}/requirements.yml"
+      ignore_errors: true
+
     - name: taskpath
       set_fact:
         taskpath: ""

@@ -83,6 +83,21 @@
         - block:
             - name: "Run checkpoint: {{ checklist.key }}/{{ taskindex }} (ansible)"
               include_tasks: "labs/{{ labId }}/{{ checklist.key }}/{{ checkpoints[checklist.key][taskindex].scriptname | default(taskindex) }}.yml"
+              when: not (checkpoints[checklist.key][taskindex].remote | default(false))
+            - name: "Run checkpoint: {{ checklist.key }}/{{ taskindex }} (ansible remote)"
+              command: "ansible-playbook /tmp/{{ taskId }}/remote.yml -e '{\"workerhost\":\"{{ wanip }}\",\"workeruser\":\"{{ checkpoints[checklist.key][taskindex].remoteuser }}\",\"missionpath\":\"{{ checklist.key }}/{{ checkpoints[checklist.key][taskindex].scriptname | default(taskindex) }}.yml\",\"taskId\":\"{{ taskId }}\",\"checkgroup\":\"{{ checklist.key }}\",\"checkpoint\":\"{{ taskindex }}\"}'"
+              register: remoteresult
+              when: checkpoints[checklist.key][taskindex].remote | default(false)
+            - name: Get stdout and stderr
+              blockinfile:
+                path: "/tmp/{{ taskId }}/{{ item }}"
+                block: "{% if remoteresult[item] != '' %}{{ remoteresult[item] | default(' ') }}{% else %} {% endif %}"
+                marker: "# {mark} {{ checklist.key }}/{{ taskindex }}"
+                create: true
+              with_items:
+              - stdout
+              - stderr
+              when: (checkpoints[checklist.key][taskindex].dumpallresult | default(false)) and (checkpoints[checklist.key][taskindex].remote | default(false))
             - name: Update result
               ansible.utils.update_fact: 
                 updates:
