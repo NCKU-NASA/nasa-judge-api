@@ -30,7 +30,7 @@ def getLabs():
     if conf.stoping:
         return json.dumps([])
     result = []
-    for a in os.listdir('judge/labs'):
+    for a in sorted(os.listdir('judge/labs'), reverse=True):
         data = json.loads(getLab(a))
         if data is not None:
             result.append(data)

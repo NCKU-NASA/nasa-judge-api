@@ -27,6 +27,8 @@ Usage: curl <host>/user/<api> -H 'Content-Type: application/json'
 GET:
     getdata                     Get all user data from backend.
                                 return: list
+    allrebuild                  Rebuild all user config.
+                                return: bool
 POST:
     getdata                     Get user data from backend.
                                 input:
@@ -45,7 +47,6 @@ POST:
                                         studentId: user studentId
                                         email: user email
                                         ipindex: user ipindex
-
     build                       Build user config.
                                 input:
                                     json:
@@ -91,6 +92,24 @@ def getdata():
     r = backend.post("user/userdata", json=data)
     return r.text
 
+@app.route('/allrebuild',methods=['GET'])
+def rebuildalluser():
+    if conf.stoping:
+        return ""
+    userdata = backend.get("user/alluserdata").json()
+    conf.buildingusercount += 1
+    adduserlock.acquire()
+    try:
+        subprocess.run(['ansible-galaxy', 'collection', 'install', '-r', 'builduser/requirements.yml'])
+        subprocess.run(['ansible-galaxy', 'role', 'install', '-r', 'builduser/requirements.yml'])
+        for user in userdata:
+            subprocess.run(['ansible-playbook', 'builduser/setup.yml', '-e', json.dumps(user)])
+            usersetting.builduser(user)
+    finally:
+        adduserlock.release()
+        conf.buildingusercount -= 1
+    return "true"
+
 @app.route('/build',methods=['POST'])
 def onbuilduser():
     if conf.stoping:
@@ -112,6 +131,7 @@ def onbuilduser():
 def onchangename():
     if conf.stoping:
         return ""
+    conf.buildingusercount += 1
     adduserlock.acquire()
     try:
         data = flask.request.get_json()
@@ -120,6 +140,7 @@ def onchangename():
         subprocess.run(['ansible-playbook', 'changename/setup.yml', '-e', json.dumps(data)])
     finally:
         adduserlock.release()
+        conf.buildingusercount -= 1
     return "true"
 
 
