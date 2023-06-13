@@ -176,7 +176,7 @@ shellreturn 0
 ```
 
 ### ansible mode
-1. Set and write your `config.yaml` for lab. In `script mode` here is example.
+1. Set and write your `config.yaml` for lab. In `ansible mode` here is example.
 ```yaml
 promissions:   # It mean this lab is for which groups.
 - guest

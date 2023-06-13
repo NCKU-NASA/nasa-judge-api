@@ -7,6 +7,7 @@
         name: "{{ workerhost }}"
         groups: workers
         ansible_ssh_user: "{{ workeruser }}"
+        ansible_port: "{{ workerport }}"
       changed_when: false
   
   handlers: []

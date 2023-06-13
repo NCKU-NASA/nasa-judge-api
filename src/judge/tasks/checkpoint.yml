@@ -84,8 +84,29 @@
             - name: "Run checkpoint: {{ checklist.key }}/{{ taskindex }} (ansible)"
               include_tasks: "labs/{{ labId }}/{{ checklist.key }}/{{ checkpoints[checklist.key][taskindex].scriptname | default(taskindex) }}.yml"
               when: not (checkpoints[checklist.key][taskindex].remote | default(false))
+            - name: set base remote vars
+              set_fact:
+                remotevariables:
+                  workerhost: "{{ wanip }}"
+                  workeruser: "{{ checkpoints[checklist.key][taskindex].remoteuser }}"
+                  workerport: "{{ remoteport | default(22) }}"
+                  missionpath: "{{ checklist.key }}/{{ checkpoints[checklist.key][taskindex].scriptname | default(taskindex) }}.yml"
+                  taskId: "{{ taskId }}"
+                  checkgroup: "{{ checklist.key }}"
+                  checkpoint: "{{ taskindex }}"
+              when: checkpoints[checklist.key][taskindex].remote | default(false)
+            - name: set local remote vars
+              ansible.utils.update_fact:
+                updates:
+                - path: remotevariables
+                  value: "{{ checkpoints[checklist.key][taskindex].remotevariables | combine(remotevariables) }}"
+              register: updated
+              when: (checkpoints[checklist.key][taskindex].remote | default(false)) and checkpoints[checklist.key][taskindex].remotevariables is defined
+            - set_fact:
+                remotevariables: "{{ updated.remotevariables }}"
+              when: (checkpoints[checklist.key][taskindex].remote | default(false)) and checkpoints[checklist.key][taskindex].remotevariables is defined
             - name: "Run checkpoint: {{ checklist.key }}/{{ taskindex }} (ansible remote)"
-              command: "ansible-playbook /tmp/{{ taskId }}/remote.yml -e '{\"workerhost\":\"{{ wanip }}\",\"workeruser\":\"{{ checkpoints[checklist.key][taskindex].remoteuser }}\",\"missionpath\":\"{{ checklist.key }}/{{ checkpoints[checklist.key][taskindex].scriptname | default(taskindex) }}.yml\",\"taskId\":\"{{ taskId }}\",\"checkgroup\":\"{{ checklist.key }}\",\"checkpoint\":\"{{ taskindex }}\"}'"
+              command: "ansible-playbook /tmp/{{ taskId }}/remote.yml -e '{{ remotevariables | to_json }}'"
               register: remoteresult
               when: checkpoints[checklist.key][taskindex].remote | default(false)
             - name: Update result
