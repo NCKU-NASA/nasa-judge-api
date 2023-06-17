@@ -76,16 +76,23 @@ def judge():
     if conf.stoping:
         return json.dumps({'alive':False})
     data = json.loads(flask.request.get_data())
+
+    if data['username'] in conf.judgingusers:
+        return json.dumps({'alive':False})
+    while len(conf.judgingusers) > 40:
+        time.sleep(0.1)
+
     lock.acquire()
     if data['username'] in conf.judgingusers:
         lock.release()
         return json.dumps({'alive':False})
-    conf.judgingusers.append(data['username'])
+    conf.judgingusers[data['username']] = {}
     lock.release()
     try:
         with open(f'judge/labs/{data["labId"]}/config.yaml', 'r') as f:
             labdata = yaml.load(f, Loader=yaml.FullLoader)
         data['taskId'] = str(uuid.uuid4())
+        conf.judgingusers[data['username']]["taskId"] = data['taskId']
         lock.acquire()
         if labdata['checkonhost']:
             while conf.hostusing:
@@ -151,17 +158,19 @@ def judge():
             shutil.rmtree(f'/tmp/{data["taskId"]}', ignore_errors=True)
 
             lock.acquire()
-            if labdata['checkonhost']:
-                conf.hostusing = False
-            elif labdata['workerusedocker']:
-                dockerworker.stop()
-                dockerworker.remove(force=True)
-            else:
-                conf.config['workers'][labdata['workergroup']].append(data['workerhost'])
-            lock.release()
+            try:
+                if labdata['checkonhost']:
+                    conf.hostusing = False
+                elif labdata['workerusedocker']:
+                    dockerworker.stop()
+                    dockerworker.remove(force=True)
+                else:
+                    conf.config['workers'][labdata['workergroup']].append(data['workerhost'])
+            finally:
+                lock.release()
     finally:
         lock.acquire()
-        conf.judgingusers.remove(data['username'])
+        del conf.judgingusers[data['username']]
         lock.release()
     return json.dumps({'alive':True, 'results':json.loads(result), 'stdout':stdout, 'stderr':stderr})
 

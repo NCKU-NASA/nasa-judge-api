@@ -2,7 +2,7 @@ import yaml
 
 hostusing = False
 
-judgingusers = []
+judgingusers = {}
 
 buildingusercount = 0
 
