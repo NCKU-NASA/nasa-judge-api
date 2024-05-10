@@ -1,2 +1,0 @@
-- name: OS-specific tasks
-  include_tasks: "{{ ansible_pkg_mgr|lower }}.yml"

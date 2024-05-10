@@ -1,7 +1,0 @@
-collections:
-  - name: ansible.utils
-
-roles:
-  - src: https://github.com/Jimmy01240397/VpnGenerator
-  - src: https://github.com/Jimmy01240397/Bind9Manager
-  - name: andrewrothstein.yq

@@ -1,6 +1,0 @@
-- name: "install {{ role_name }}"
-  yum:
-    name: 
-      - bind
-      - bind-utils
-  become: true

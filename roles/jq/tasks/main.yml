@@ -1,4 +1,0 @@
-- name: "install {{ role_name }}"
-  package:
-    name: "{{ role_name }}"
-  become: true

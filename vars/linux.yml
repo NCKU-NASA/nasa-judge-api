@@ -1,4 +1,0 @@
-etc: /etc
-nasajudgeapidir: /etc/nasajudgeapi
-wireguarddir: /etc/wireguard
-nameddir: /etc/bind
