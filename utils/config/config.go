@@ -3,21 +3,20 @@ package config
 import (
     "os"
     "strconv"
+    "encoding/json"
 )
 
 var Debug bool
+var Trust []string
 var Port string
 var Secret string
 var Sessionname string
-var DBservice string
-var DBuser string
-var DBpasswd string
-var DBhost string
-var DBport string
-var DBname string
-var DBdebug bool
+var Pubkey string
+var AdminUser string
+var AdminPasswd string
 var RedisURL string
 var RedisPasswd string
+var WorkerConfigPath string
 
 func init() {
     loadenv()
@@ -31,24 +30,22 @@ func init() {
             Debug = false
         }
     }
-    dbdebugstr, exists := os.LookupEnv("DBDEBUG")
-    if !exists {
-        DBdebug = true
+    truststr := os.Getenv("TRUST")
+    if truststr == "" {
+        Trust = []string{"127.0.0.1", "::1"}
     } else {
-        DBdebug, err = strconv.ParseBool(dbdebugstr)
+        err = json.Unmarshal([]byte(truststr), &Trust)
         if err != nil {
-            DBdebug = false
+            panic(err)
         }
     }
     Port = os.Getenv("PORT")
     Secret = os.Getenv("SECRET")
     Sessionname = os.Getenv("SESSIONNAME")
-    DBservice = os.Getenv("DBSERVICE")
-    DBuser = os.Getenv("DBUSER")
-    DBpasswd = os.Getenv("DBPASSWD")
-    DBhost = os.Getenv("DBHOST")
-    DBport = os.Getenv("DBPORT")
-    DBname = os.Getenv("DBNAME")
+    Pubkey = os.Getenv("PUBKEY")
+    AdminUser = os.Getenv("ADMINUSER")
+    AdminPasswd = os.Getenv("ADMINPASSWD")
     RedisURL = os.Getenv("REDISURL")
     RedisPasswd = os.Getenv("REDISPASSWD")
+    WorkerConfigPath = os.Getenv("WORKERCONFIG")
 }

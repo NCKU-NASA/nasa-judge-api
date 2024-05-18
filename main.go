@@ -5,11 +5,10 @@ import (
     "github.com/gin-contrib/sessions"
     "github.com/gin-contrib/sessions/cookie"
     "github.com/go-errors/errors"
-
+    
     "github.com/NCKU-NASA/nasa-judge-api/router"
-    "github.com/NCKU-NASA/nasa-judge-backend/utils/redis"
+    "github.com/NCKU-NASA/nasa-judge-api/utils/redis"
     "github.com/NCKU-NASA/nasa-judge-api/utils/config"
-    "github.com/NCKU-NASA/nasa-judge-api/utils/database"
     "github.com/NCKU-NASA/nasa-judge-api/utils/errutil"
     "github.com/NCKU-NASA/nasa-judge-api/middlewares/auth"
 )
@@ -23,6 +22,7 @@ func main() {
     backend := gin.Default()
     backend.Use(errorHandler)
     backend.Use(gin.CustomRecovery(panicHandler))
+    backend.Use(auth.CheckIsTrust)
     backend.Use(sessions.Sessions(config.Sessionname, store))
     backend.Use(auth.AddMeta)
     router.Init(&backend.RouterGroup)

@@ -4,9 +4,12 @@ import (
 //    "fmt"
     "github.com/gin-gonic/gin"
     "github.com/gin-contrib/sessions"
+    "golang.org/x/exp/slices"
+    
+    "github.com/NCKU-NASA/nasa-judge-lib/schema/user"
 
     "github.com/NCKU-NASA/nasa-judge-api/utils/errutil"
-    "github.com/NCKU-NASA/nasa-judge-api/models/user"
+    "github.com/NCKU-NASA/nasa-judge-api/utils/config"
 )
 
 func CheckSignIn(c *gin.Context) {
@@ -21,19 +24,35 @@ func CheckIsAdmin(c *gin.Context) {
     }
 }
 
+func CheckIsTrust(c *gin.Context) {
+    ip := c.ClientIP()
+    if !slices.Contains(config.Trust, ip) {
+        errutil.AbortAndStatus(c, 401)
+    }
+}
+
 func AddMeta(c *gin.Context) {
     session := sessions.Default(c)
     username := session.Get("user")
     if username == nil {
         c.Set("isSignIn", false)
     } else {
-        userdata, err := user.GetUser(username.(string))
-        c.Set("user", userdata)
+        userdata := user.User{
+            Username: username.(string),
+        }
+        userdata.Fix()
+        if userdata.Username == "" {
+            c.Set("isSignIn", false)
+            return
+        }
+        var err error
+        userdata, err = user.GetUser(userdata)
         if err != nil {
             c.Set("isSignIn", false)
         } else {
+            c.Set("user", userdata)
             c.Set("isSignIn", true)
-            c.Set("isAdmin", userdata.IsAdmin())
+            c.Set("isAdmin", userdata.ContainGroup("admin"))
         }
     }
 }

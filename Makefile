@@ -1,6 +1,6 @@
 builder := go
 builddir := bin
-exe := github.com/NCKU-NASA/nasa-judge-api
+exe := nasa-judge-api
 path := /usr/local/bin
 importdir := middlewares models router utils
 instdir := /usr/local/share/$(exe)
@@ -8,12 +8,18 @@ instrelativedir := $(subst /usr/local,..,$(instdir))
 systemddir := /etc/systemd/system
 config := .env
 systemd := $(exe).service
+ldflags := -s -w
 tags := release
 
 all: $(builddir)/$(exe)
 
 $(builddir)/$(exe): main.go go.mod go.sum $(importdir)
-		$(builder) build -o $(builddir)/$(exe) -tags $(tags) $<
+		$(builder) generate ./...
+		CGO_ENABLED=0 $(builder) build -o $(builddir)/$(exe) -tags $(tags) -ldflags "$(ldflags)" $<
+
+run: main.go go.mod go.sum $(importdir)
+		$(builder) generate ./...
+		$(builder) run $<
 
 install: $(path)/$(exe) $(systemddir)/$(systemd)
 
