@@ -15,14 +15,17 @@ FROM debian:latest as release
 RUN apt-get update && apt-get full-upgrade -y && apt-get install ca-certificates curl wget -y && update-ca-certificates
 
 COPY --from=builder /src/bin /app
+COPY docker-entrypoint.sh /app
 
-RUN mkdir /app/labs && \
-    useradd -m -s /bin/bash app && \
-    chown -R app:app /app
+RUN chmod +x /app/docker-entrypoint.sh && \
+    mkdir /app/labs
+#    useradd -m -s /bin/bash app && \
+#    chown -R app:app /app
 
-USER app
+#USER app
 WORKDIR /app
 
 RUN touch .env
+RUN touch init.sh
 
-ENTRYPOINT ["./nasa-judge-api"]
+ENTRYPOINT ["./docker-entrypoint.sh"]
