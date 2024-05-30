@@ -6,6 +6,9 @@ import (
     "github.com/gin-contrib/sessions/cookie"
     "github.com/go-errors/errors"
     
+    "github.com/NCKU-NASA/nasa-judge-lib/utils/docker"
+    "github.com/NCKU-NASA/nasa-judge-lib/utils/host"
+    
     "github.com/NCKU-NASA/nasa-judge-api/router"
     "github.com/NCKU-NASA/nasa-judge-api/utils/redis"
     "github.com/NCKU-NASA/nasa-judge-api/utils/config"
@@ -15,6 +18,8 @@ import (
 
 func main() {
     defer redis.Close()
+    docker.Init(config.JudgeURL, config.DockerSubnetPool, config.DockerPrefix)
+    host.Init(config.JudgeURL)
     if !config.Debug {
         gin.SetMode(gin.ReleaseMode)
     }

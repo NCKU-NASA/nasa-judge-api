@@ -1,6 +1,6 @@
-FROM golang:1.20 as builder
+FROM golang:1.20-alpine as builder
 
-RUN apt-get update && apt-get full-upgrade -y && apt-get install make -y
+RUN apk add --no-cache make build-base
 
 WORKDIR /src
 COPY go.mod .
@@ -10,12 +10,12 @@ RUN --mount=type=cache,target="$CACHE" go mod graph | awk '{if ($1 !~ "@") print
 COPY . .
 RUN --mount=type=cache,target="$CACHE" make clean && make
 
-FROM debian:latest as release
-
-RUN apt-get update && apt-get full-upgrade -y && apt-get install ca-certificates curl wget -y && update-ca-certificates
+FROM docker:dind as release
+RUN apk add --no-cache bash ca-certificates curl wget tzdata bind-tools && update-ca-certificates
 
 COPY --from=builder /src/bin /app
 COPY docker-entrypoint.sh /app
+COPY file/global /app/global
 
 RUN chmod +x /app/docker-entrypoint.sh && \
     mkdir /app/labs

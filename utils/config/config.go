@@ -5,6 +5,8 @@ import (
     "os"
     "strconv"
     "encoding/json"
+
+    netaddr "github.com/dspinhirne/netaddr-go"
 )
 
 var Debug bool
@@ -18,6 +20,9 @@ var AdminPasswd string
 var RedisURL string
 var RedisPasswd string
 var WorkerConfigPath string
+var JudgeURL string
+var DockerSubnetPool *netaddr.IPv4Net
+var DockerPrefix uint8
 
 func init() {
     loadenv()
@@ -56,4 +61,24 @@ func init() {
     RedisURL = os.Getenv("REDISURL")
     RedisPasswd = os.Getenv("REDISPASSWD")
     WorkerConfigPath = os.Getenv("WORKERCONFIG")
+    JudgeURL = os.Getenv("JUDGEURL")
+    dockersubnetpoolstr, exists := os.LookupEnv("DOCKERSUBNETPOOL")
+    if !exists {
+        DockerSubnetPool, _ = netaddr.ParseIPv4Net("172.16.0.0/16")
+    } else {
+        DockerSubnetPool, err = netaddr.ParseIPv4Net(dockersubnetpoolstr)
+        if err != nil {
+            DockerSubnetPool, _ = netaddr.ParseIPv4Net("172.16.0.0/16")
+        }
+    }
+    dockerprefixstr, exists := os.LookupEnv("DOCKERPREFIX")
+    if !exists {
+        DockerPrefix = 24
+    } else {
+        tmp, err := strconv.ParseUint(dockerprefixstr, 10, 8)
+        DockerPrefix = uint8(tmp)
+        if err != nil {
+            DockerPrefix = 24
+        }
+    }
 }

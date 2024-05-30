@@ -6,6 +6,7 @@ import (
     "github.com/NCKU-NASA/nasa-judge-api/middlewares/auth"
     "github.com/NCKU-NASA/nasa-judge-api/router/status"
     "github.com/NCKU-NASA/nasa-judge-api/router/labs"
+    "github.com/NCKU-NASA/nasa-judge-api/router/score"
 )
 
 var router *gin.RouterGroup
@@ -16,8 +17,8 @@ func Init(r *gin.RouterGroup) {
     router.GET("/pubkey", auth.CheckIsTrust, pubkey)
     status.Init(router.Group("/status"))
     labs.Init(router.Group("/labs"))
+    score.Init(router.Group("/score"))
     //user.Init(router.Group("/user"))
-    //score.Init(router.Group("/score"))
 }
 
 func help(c *gin.Context) {

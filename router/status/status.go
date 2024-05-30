@@ -55,6 +55,19 @@ func workerlist(c *gin.Context) {
 }
 
 func showjudgingusers(c *gin.Context) {
-    c.JSON(200, status.Judging)
+    result := make([]struct{
+        Name string `json:"name"`
+        JudgeID string `json:"judgeid"`
+    }, len(status.Judging))
+    for idx, nowuser := range status.Judging {
+        result[idx] = struct{
+            Name string `json:"name"`
+            JudgeID string `json:"judgeid"`
+        } {
+            Name: nowuser.Username,
+            JudgeID: status.UserToJudgingID[nowuser.ID],
+        }
+    }
+    c.JSON(200, result)
 }
 
