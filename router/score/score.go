@@ -124,6 +124,7 @@ func judge(c *gin.Context) {
         }
         var stdout bytes.Buffer
         var stderr bytes.Buffer
+        status.JudgingIDToEnv[judgeid]["judgeid"] = judgeid
         nowscore.Result, stdout, stderr, err = labdata.Judge(userdata, status.JudgingIDToEnv[judgeid], judgedata.Contents)
         if err != nil {
             fmt.Println(err)

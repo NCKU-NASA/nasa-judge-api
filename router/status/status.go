@@ -4,6 +4,7 @@ import (
 
     "github.com/NCKU-NASA/nasa-judge-api/middlewares/auth"
     "github.com/NCKU-NASA/nasa-judge-api/models/status"
+    "github.com/NCKU-NASA/nasa-judge-api/utils/errutil"
 )
 
 var router *gin.RouterGroup
@@ -16,6 +17,7 @@ func Init(r *gin.RouterGroup) {
     router.GET("/alive", auth.CheckIsTrust, alive)
     router.GET("/workerlist", auth.CheckIsTrust, workerlist)
     router.GET("/showjudgingusers", auth.CheckIsTrust, showjudgingusers)
+    router.GET("/setenv", setenv)
 }
 
 func help(c *gin.Context) {
@@ -71,3 +73,20 @@ func showjudgingusers(c *gin.Context) {
     c.JSON(200, result)
 }
 
+func setenv(c *gin.Context) {
+    var postdata struct {
+        ID string `json:"id"`
+        Envs map[string]string `json:"envs"`
+    }
+    err := c.ShouldBindJSON(&postdata)
+    if err != nil {
+        errutil.AbortAndStatus(c, 400)
+        return
+    }
+    if env, exist := status.JudgingIDToEnv[postdata.ID]; exist {
+        for key, data := range postdata.Envs {
+            env[key] = data
+        }
+    }
+    c.JSON(200, "Success")
+}
